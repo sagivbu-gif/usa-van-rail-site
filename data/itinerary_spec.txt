@@ -1,0 +1,151 @@
+{
+  "schema_version": "2",
+  "meta": {
+    "date_anchor": "2026-08-27",
+    "timezone": "Asia/Jerusalem",
+    "units": "imperial",
+    "van": {
+      "type": "Class C",
+      "length_ft": 28,
+      "sleeping": "2 adults + 1 child",
+      "seatbelts": 4,
+      "tanks": {"fresh_gal": 40, "grey_gal": 30, "black_gal": 30},
+      "pickup": {"city": "Chicago, IL", "datetime_local": "2026-08-27T10:00"},
+      "dropoff": {"city": "Seattle, WA", "datetime_local": "2026-09-10T10:00"}
+    }
+  },
+  "defaults": {
+    "price_estimate": {
+      "national_park_entry_vehicle": 35,
+      "city_parking_hour": 4,
+      "public_lot_day": 15,
+      "rv_hookup_night": 55,
+      "museum_adult": 25
+    }
+  },
+  "days": [
+    {
+      "id": "day1",
+      "title": "Chicago arrival & pickup",
+      "date_offset_days": 0,
+      "sleep": {"type": "rv_park", "name": "Chicago Northwest KOA (demo)"},
+      "segments": [
+        {
+          "mode": "rv",
+          "from_point_id": "chi_pickup",
+          "to_point_id": "koa_camp",
+          "polyline": "", 
+          "alt_routes": {"no_tolls": false}
+        }
+      ],
+      "points": [
+        {
+          "id": "chi_pickup",
+          "slug": "chicago-rv-pickup",
+          "name": "RV Pickup – Cruise America Chicago (demo)",
+          "type": "logistics",
+          "coords": [41.8781, -87.6298],
+          "stay_duration_min": 90,
+          "description": "Vehicle orientation & paperwork.",
+          "links": [{"title": "Website", "url": "https://www.cruiseamerica.com/"}],
+          "parking": "On site",
+          "price_estimate": null
+        },
+        {
+          "id": "koa_camp",
+          "slug": "chicago-koa",
+          "name": "Chicago Northwest KOA (demo)",
+          "type": "rv_camp",
+          "coords": [42.1, -88.3],
+          "stay_duration_min": 720,
+          "description": "Full hookups, showers, laundry.",
+          "links": [],
+          "parking": "Pull‑through sites; check‑in after 1pm.",
+          "price_estimate": {"rv_hookup_night": 55}
+        }
+      ]
+    },
+    {
+      "id": "day2",
+      "title": "Chicago city day (RV parked)",
+      "date_offset_days": 1,
+      "sleep": {"type": "rv_park", "name": "Chicago Northwest KOA (demo)"},
+      "segments": [
+        {
+          "mode": "walk_transit",
+          "from_point_id": "millennium_park",
+          "to_point_id": "art_institute",
+          "polyline": ""
+        }
+      ],
+      "points": [
+        {
+          "id": "millennium_park",
+          "slug": "millennium-park",
+          "name": "Millennium Park",
+          "type": "city_landmark",
+          "coords": [41.8826, -87.6226],
+          "stay_duration_min": 90,
+          "description": "The Bean, gardens, fountains.",
+          "links": [{"title": "Official site", "url": "https://www.chicago.gov/"}],
+          "parking": "Use public garages; RV stays at KOA",
+          "price_estimate": {"city_parking_hour": 4}
+        },
+        {
+          "id": "art_institute",
+          "slug": "art-institute",
+          "name": "The Art Institute of Chicago",
+          "type": "museum",
+          "coords": [41.8796, -87.6237],
+          "stay_duration_min": 150,
+          "description": "World‑class collection. Buy timed tickets.",
+          "links": [{"title": "Tickets", "url": "https://www.artic.edu/"}],
+          "parking": "Public garage nearby",
+          "price_estimate": {"museum_adult": 25}
+        }
+      ]
+    },
+    {
+      "id": "day3",
+      "title": "Empire Builder to Minneapolis (Amtrak)",
+      "date_offset_days": 2,
+      "sleep": {"type": "hotel", "name": "Downtown Minneapolis (demo)"},
+      "segments": [
+        {
+          "mode": "train",
+          "amtrak_line": "Empire Builder",
+          "from_point_id": "chi_union",
+          "to_point_id": "msn_union",
+          "polyline": "}", 
+          "notes": "Polyline follows real line; pre‑encoded in spec"
+        }
+      ],
+      "points": [
+        {
+          "id": "chi_union",
+          "slug": "chicago-union-station",
+          "name": "Chicago Union Station",
+          "type": "train_station",
+          "coords": [41.8786, -87.6405],
+          "stay_duration_min": 60,
+          "description": "Board Amtrak Empire Builder.",
+          "links": [{"title": "Amtrak", "url": "https://www.amtrak.com/"}],
+          "parking": "Taxi/Transit from KOA Park & Ride",
+          "price_estimate": null
+        },
+        {
+          "id": "msn_union",
+          "slug": "minneapolis-st-paul",
+          "name": "Minneapolis–St. Paul (Midway Stn)",
+          "type": "train_station",
+          "coords": [44.9707, -93.2313],
+          "stay_duration_min": 45,
+          "description": "Arrive & transfer to hotel.",
+          "links": [],
+          "parking": "Hotel valet/self‑park",
+          "price_estimate": null
+        }
+      ]
+    }
+  ]
+}
