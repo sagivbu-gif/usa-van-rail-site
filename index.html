@@ -1,194 +1,33 @@
 <!doctype html>
-<html lang="en">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>USA Van + Rail — Slim Map (Days 1–15)</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
-  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    #map { height: 60vh; }
-    .chip { display:inline-flex; align-items:center; padding:2px 8px; font-size:12px; border-radius:9999px; background:#f3f4f6; border:1px solid #e5e7eb; }
-    .warn { color:#b45309; font-size: 12px; }
-  </style>
-</head>
-<body class="bg-white text-gray-900">
-  <header class="p-4 border-b sticky top-0 bg-white z-40">
-    <div class="flex items-center justify-between gap-3">
-      <h1 class="text-lg font-bold">USA Van + Rail — Days 1–15</h1>
-      <div class="flex items-center gap-2">
-        <label class="text-sm">Mode:</label>
-        <select id="modeFilter" class="border rounded px-2 py-1 text-sm">
-          <option value="all" selected>All</option>
-          <option value="road">Road</option>
-          <option value="rail">Rail</option>
-          <option value="hike">Hike</option>
-        </select>
-        <label class="text-sm">Scenic:</label>
-        <select id="scenicPref" class="border rounded px-2 py-1 text-sm">
-          <option value="auto" selected>Auto</option>
-          <option value="scenic">Prefer Scenic</option>
-          <option value="fastest">Prefer Fastest</option>
-        </select>
-      </div>
-    </div>
-  </header>
-
-  <main class="p-4">
-    <div id="map" class="rounded-xl border mb-4"></div>
-    <div class="text-sm mb-2 space-x-2">
-      <span class="chip">Road (live OSRM)</span>
-      <span class="chip">Rail (fixed)</span>
-      <span class="chip">Hike (fixed)</span>
-      <span class="chip">Dashed = placeholder</span>
-    </div>
-    <div id="warnings" class="warn mb-4"></div>
-    <section id="days" class="space-y-3"></section>
-  </main>
-
-  <script>
-    const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {maxZoom: 19, attribution: '&copy; OpenStreetMap'});
-    const map = L.map('map', { scrollWheelZoom: true, tap: true, preferCanvas: true }).addLayer(osm);
-    const roadLayer = L.layerGroup().addTo(map);
-    const fixedLayer = L.layerGroup().addTo(map);
-    const markers = L.layerGroup().addTo(map);
-    const bounds = L.latLngBounds([]);
-    const routeControls = [];
-
-    function decodePolyline(str, precision) {
-      let index = 0, lat = 0, lng = 0, coordinates = [], shift = 0, result = 0, byte = null;
-      precision = Math.pow(10, precision || 5);
-      while (index < str.length) {
-        shift = result = 0;
-        do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
-        lat += (result & 1) ? ~(result >> 1) : (result >> 1);
-        shift = result = 0;
-        do { byte = str.charCodeAt(index++) - 63; result |= (byte & 0x1f) << shift; shift += 5; } while (byte >= 0x20);
-        lng += (result & 1) ? ~(result >> 1) : (result >> 1);
-        coordinates.push([lat / precision, lng / precision]);
-      }
-      return coordinates;
-    }
-
-    function addMarker(p) {
-      const m = L.marker([p.coords[0], p.coords[1]]).addTo(markers);
-      m.bindPopup(`<b>${p.name}</b><br/><span class='text-xs'>${p.type}</span><br/>Stay ~${p.stay_duration_min} min`, { autoClose:false, closeOnClick:false });
-      bounds.extend([p.coords[0], p.coords[1]]);
-    }
-
-    function drawFixed(coords, color, dashed=false) {
-      return L.polyline(coords.map(c => [c[0], c[1]]), { color, weight:4, dashArray: dashed ? '6,6' : null }).addTo(fixedLayer);
-    }
-
-    function routeRoad(fromPt, toPt, scenicPref) {
-      const control = L.Routing.control({
-        waypoints: [
-          L.latLng(fromPt.coords[0], fromPt.coords[1]),
-          L.latLng(toPt.coords[0], toPt.coords[1])
-        ],
-        createMarker: () => null,
-        lineOptions: { styles: [{ color:'#ef4444', weight:5, opacity:0.9 }]},
-        router: L.Routing.osrmv1({ serviceUrl:'https://router.project-osrm.org/route/v1', profile:'driving', useHints:true }),
-        routeWhileDragging: false, show: false, addWaypoints: false, waypointMode:'snap', alternatives: true
-      }).addTo(map);
-
-      control.on('routesfound', (e) => {
-        let chosen = e.routes[0];
-        if (scenicPref === 'scenic') {
-          let best = e.routes[0]; let bestScore = e.routes[0].summary.totalTime;
-          e.routes.forEach(r => { if (r.summary.totalTime < bestScore) { best = r; bestScore = r.summary.totalTime; } });
-          chosen = best;
-        } else if (scenicPref === 'fastest') {
-          let best = e.routes[0];
-          e.routes.forEach(r => { if (r.summary.totalTime < best.summary.totalTime) best = r; });
-          chosen = best;
-        }
-        control.setRoutes([chosen]);
-        chosen.coordinates.forEach(c => bounds.extend([c.lat, c.lng]));
-        map.fitBounds(bounds.pad(0.12));
-      });
-
-      routeControls.push(control);
-      return control;
-    }
-
-    function clearRoutes() {
-      routeControls.forEach(rc => { try { rc.remove(); } catch(e){} });
-      routeControls.length = 0;
-      roadLayer.clearLayers();
-      fixedLayer.clearLayers();
-      markers.clearLayers();
-      bounds._northEast = null; bounds._southWest = null;
-    }
-
-    function findPoint(days, id) {
-      for (const d of days) {
-        const p = (d.points||[]).find(x => x.id === id);
-        if (p) return p;
-      }
-      return null;
-    }
-
-    function render(days, scenicPref) {
-      clearRoutes();
-      const warnings = document.getElementById('warnings'); warnings.innerHTML='';
-
-      days.forEach(d => {
-        (d.points||[]).forEach(addMarker);
-        (d.segments||[]).forEach(seg => {
-          const from = (d.points||[]).find(p => p.id === seg.from) || findPoint(days, seg.from);
-          const to = (d.points||[]).find(p => p.id === seg.to) || findPoint(days, seg.to);
-          if (!from || !to) return;
-
-          if (seg.mode === 'road') {
-            routeRoad(from, to, scenicPref);
-          } else if (seg.mode === 'rail' || seg.mode === 'hike') {
-            if (Array.isArray(seg.polyline) && seg.polyline.length > 1) {
-              drawFixed(seg.polyline, seg.mode === 'rail' ? '#0ea5e9' : '#16a34a', false);
-            } else if (typeof seg.polyline === 'string' && seg.polyline.length > 0) {
-              const coords = decodePolyline(seg.polyline);
-              drawFixed(coords, seg.mode === 'rail' ? '#0ea5e9' : '#16a34a', false);
-            } else {
-              drawFixed([from.coords, to.coords], '#6b7280', true);
-              warnings.innerHTML += `<div>Day ${d.day}: ${seg.mode} has no polyline — showing dashed placeholder.</div>`;
-            }
-          }
-        });
-      });
-
-      if (bounds.isValid && bounds.isValid()) { map.fitBounds(bounds.pad(0.12)); } else { map.setView([39.5,-98.35],4); }
-      // Day cards
-      const daysEl = document.getElementById('days'); daysEl.innerHTML='';
-      days.forEach(d => {
-        const pts = (d.points||[]).map(p => `<li class='text-sm'><b>${p.name}</b> <span class='chip'>${p.type}</span></li>`).join('');
-        const segs = (d.segments||[]).map(s => `<li class='text-xs'>${s.mode.toUpperCase()} ${s.scenic_preferred?'• scenic':''} ${s.polyline?'• poly':''}</li>`).join('') || '<li class="text-xs">—</li>';
-        const div = document.createElement('div');
-        div.className='border rounded-lg p-3';
-        div.innerHTML = `<div class='flex items-center justify-between'><h3 class='font-semibold'>Day ${d.day}: ${d.title}</h3><div class='text-xs text-gray-500'>${(d.segments||[]).length} segments</div></div>
-        <div class='mt-2'><div class='text-xs font-medium mb-1'>Points</div><ul class='list-disc ml-5 space-y-1'>${pts}</ul></div>
-        <div class='mt-2'><div class='text-xs font-medium mb-1'>Segments</div><ul class='list-disc ml-5 space-y-1'>${segs}</ul></div>
-        ${d.sleep?`<div class='mt-2 text-xs text-gray-600'>Sleep: ${d.sleep}</div>`:''}`;
-        daysEl.appendChild(div);
-      });
-    }
-
-    async function main() {
-      const res = await fetch('data/itinerary_spec.txt');
-      const data = await res.json();
-      window.itinerary = data;
-      render(data.days.slice(0,15), document.getElementById('scenicPref').value);
-
-      document.getElementById('modeFilter').addEventListener('change', () => {
-        render(window.itinerary.days.slice(0,15), document.getElementById('scenicPref').value);
-      });
-      document.getElementById('scenicPref').addEventListener('change', (e) => {
-        render(window.itinerary.days.slice(0,15), e.target.value);
-      });
-    }
-    main();
-  </script>
-</body>
-</html>
+<html lang='en'><head><meta charset='utf-8'/><meta name='viewport' content='width=device-width, initial-scale=1'/>
+<title>USA Van + Rail — Days 1–15</title>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css'>
+<script src='https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js'></script>
+<script src='https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js'></script>
+<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css'>
+<script src='https://cdn.jsdelivr.net/npm/@turf/turf@7.1.0/turf.min.js'></script>
+<script src='https://cdn.tailwindcss.com'></script>
+<style>#map{height:60vh}.chip{display:inline-flex;align-items:center;padding:2px 8px;font-size:12px;border-radius:9999px;background:#f3f4f6;border:1px solid #e5e7eb}.warn{color:#b45309;font-size:12px}</style>
+</head><body class='bg-white text-gray-900'>
+<header class='p-4 border-b sticky top-0 bg-white z-40'><div class='flex items-center justify-between gap-3'>
+<h1 class='text-lg font-bold'>USA Van + Rail — Days 1–15</h1>
+<div class='flex items-center gap-2'><label class='text-sm'>Mode:</label><select id='modeFilter' class='border rounded px-2 py-1 text-sm'><option value='all'>All</option><option value='road'>Road</option><option value='rail'>Rail</option><option value='hike'>Hike</option></select><label class='text-sm'>Scenic:</label><select id='scenicPref' class='border rounded px-2 py-1 text-sm'><option value='auto'>Auto</option><option value='scenic'>Prefer Scenic</option><option value='fastest'>Prefer Fastest</option></select></div>
+</div></header>
+<main class='p-4'><div id='map' class='rounded-xl border mb-4'></div>
+<div class='text-sm mb-2 space-x-2'><span class='chip'>Road (live OSRM)</span><span class='chip'>Rail (fixed)</span><span class='chip'>Hike (fixed)</span><span class='chip'>Dashed = placeholder</span></div>
+<div id='warnings' class='warn mb-4'></div><section id='days' class='space-y-3'></section></main>
+<script>
+const osm=L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap'});
+const map=L.map('map',{scrollWheelZoom:true,tap:true,preferCanvas:true}).addLayer(osm);
+const roadLayer=L.layerGroup().addTo(map),fixedLayer=L.layerGroup().addTo(map),markers=L.layerGroup().addTo(map);
+const bounds=L.latLngBounds([]);const routeControls=[];
+function decodePolyline(str,precision){let index=0,lat=0,lng=0,coordinates=[],shift=0,result=0,byte=null;precision=Math.pow(10,precision||5);while(index<str.length){shift=result=0;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5;}while(byte>=0x20);lat+=((result&1)?~(result>>1):(result>>1));shift=result=0;do{byte=str.charCodeAt(index++)-63;result|=(byte&0x1f)<<shift;shift+=5;}while(byte>=0x20);lng+=((result&1)?~(result>>1):(result>>1));coordinates.push([lat/precision,lng/precision]);}return coordinates;}
+function addMarker(p){const m=L.marker([p.coords[0],p.coords[1]]).addTo(markers);m.bindPopup(`<b>${p.name}</b><br/><span class='text-xs'>${p.type}</span><br/>Stay ~${p.stay_duration_min} min`,{autoClose:false,closeOnClick:false});bounds.extend([p.coords[0],p.coords[1]]);}
+function drawFixed(coords,color,dashed=false){return L.polyline(coords.map(c=>[c[0],c[1]]),{color,weight:4,dashArray:dashed?'6,6':null}).addTo(fixedLayer);}
+function routeRoad(fromPt,toPt,scenicPref){const control=L.Routing.control({waypoints:[L.latLng(fromPt.coords[0],fromPt.coords[1]),L.latLng(toPt.coords[0],toPt.coords[1])],createMarker:()=>null,lineOptions:{styles:[{color:'#ef4444',weight:5,opacity:0.9}]},router:L.Routing.osrmv1({serviceUrl:'https://router.project-osrm.org/route/v1',profile:'driving',useHints:true}),routeWhileDragging:false,show:false,addWaypoints:false,waypointMode:'snap',alternatives:true}).addTo(map);control.on('routesfound',e=>{let chosen=e.routes[0];if(scenicPref==='fastest'){let best=e.routes[0];e.routes.forEach(r=>{if(r.summary.totalTime<best.summary.totalTime)best=r;});chosen=best;}control.setRoutes([chosen]);chosen.coordinates.forEach(c=>bounds.extend([c.lat,c.lng]));map.fitBounds(bounds.pad(0.12));});routeControls.push(control);return control;}
+function clearRoutes(){routeControls.forEach(rc=>{try{rc.remove();}catch(e){}});routeControls.length=0;roadLayer.clearLayers();fixedLayer.clearLayers();markers.clearLayers();bounds._northEast=null;bounds._southWest=null;}
+function findPoint(days,id){for(const d of days){const p=(d.points||[]).find(x=>x.id===id);if(p)return p;}return null;}
+function render(days,scenicPref){clearRoutes();const warnings=document.getElementById('warnings');warnings.innerHTML='';days.forEach(d=>{(d.points||[]).forEach(addMarker);(d.segments||[]).forEach(seg=>{const from=(d.points||[]).find(p=>p.id===seg.from)||findPoint(days,seg.from);const to=(d.points||[]).find(p=>p.id===seg.to)||findPoint(days,seg.to);if(!from||!to)return;if(seg.mode==='road'){routeRoad(from,to,scenicPref);}else if(seg.mode==='rail'||seg.mode==='hike'){if(Array.isArray(seg.polyline)&&seg.polyline.length>1){drawFixed(seg.polyline,seg.mode==='rail'?'#0ea5e9':'#16a34a',false);}else if(typeof seg.polyline==='string'&&seg.polyline.length>0){const coords=decodePolyline(seg.polyline);drawFixed(coords,seg.mode==='rail'?'#0ea5e9':'#16a34a',false);}else{drawFixed([from.coords,to.coords],'#6b7280',true);warnings.innerHTML+=`<div>Day ${d.day}: ${seg.mode} has no polyline — showing dashed placeholder.</div>`;}});});if(bounds.isValid&&bounds.isValid()){map.fitBounds(bounds.pad(0.12));}else{map.setView([39.5,-98.35],4);}const daysEl=document.getElementById('days');daysEl.innerHTML='';days.forEach(d=>{const pts=(d.points||[]).map(p=>`<li class='text-sm'><b>${p.name}</b> <span class='chip'>${p.type}</span></li>`).join('');const segs=(d.segments||[]).map(s=>`<li class='text-xs'>${s.mode.toUpperCase()} ${s.scenic_preferred?'• scenic':''} ${s.polyline?'• poly':''}</li>`).join('')||'<li class="text-xs">—</li>';const div=document.createElement('div');div.className='border rounded-lg p-3';div.innerHTML=`<div class='flex items-center justify-between'><h3 class='font-semibold'>Day ${d.day}: ${d.title}</h3><div class='text-xs text-gray-500'>${(d.segments||[]).length} segments</div></div><div class='mt-2'><div class='text-xs font-medium mb-1'>Points</div><ul class='list-disc ml-5 space-y-1'>${pts}</ul></div><div class='mt-2'><div class='text-xs font-medium mb-1'>Segments</div><ul class='list-disc ml-5 space-y-1'>${segs}</ul></div>${d.sleep?`<div class='mt-2 text-xs text-gray-600'>Sleep: ${d.sleep}</div>`:''}`;daysEl.appendChild(div);});}
+async function main(){const res=await fetch('data/itinerary_spec.txt');const data=await res.json();window.itinerary=data;render(data.days.slice(0,15),document.getElementById('scenicPref').value);document.getElementById('modeFilter').addEventListener('change',()=>{render(window.itinerary.days.slice(0,15),document.getElementById('scenicPref').value);});document.getElementById('scenicPref').addEventListener('change',e=>{render(window.itinerary.days.slice(0,15),e.target.value);});}
+main();
+</script></body></html>
