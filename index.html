@@ -1,304 +1,232 @@
-<!DOCTYPE html>
-<html lang="en" dir="ltr">
+<!doctype html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Trip Itinerary — Van + Rail</title>
+  <title>USA Van + Rail Itinerary (Slim Map 15 days)</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css">
+  <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7.1.0/turf.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <style>
-    html, body { height: 100%; }
-    #map { height: 55vh; }
-    .seg-badge { font-size: 0.72rem; }
-    .seg-road { background: #2563eb; color: #fff; }
-    .seg-train { background: #059669; color: #fff; }
-    .seg-walk { background: #6b7280; color: #fff; }
-    .leaflet-popup { pointer-events: auto; }
-    .tab-active { border-bottom: 2px solid #111827; color: #111827; }
-    .tab-inactive { color: #6b7280; }
+    #map { height: 60vh; }
+    .leaflet-popup-content { margin: 8px 10px; }
+    .chip { @apply inline-flex items-center px-2 py-1 text-xs rounded-full bg-gray-100 border; }
   </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
-  <header class="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-gray-200">
-    <div class="max-w-6xl mx-auto px-4">
-      <div class="flex items-center gap-3 py-3">
-        <div class="flex items-center gap-2">
-          <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 13.5l7.5-7.5 6 6L21 7.5"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 20.25h18"/></svg>
-          <h1 class="text-lg sm:text-xl font-semibold">Trip Itinerary — Van + Rail</h1>
-        </div>
-        <nav class="ml-auto flex items-end gap-5 text-sm">
-          <button data-tab="itinerary" class="tab-btn tab-active pb-2">Itinerary</button>
-          <button data-tab="van" class="tab-btn tab-inactive pb-2">Van</button>
-          <button data-tab="about" class="tab-btn tab-inactive pb-2">About</button>
-        </nav>
+<body class="bg-white text-gray-900">
+  <header class="p-4 border-b sticky top-0 bg-white z-40">
+    <div class="flex items-center justify-between gap-3">
+      <h1 class="text-lg font-bold">USA Van + Rail — 15‑day Slim Map</h1>
+      <div class="flex items-center gap-2">
+        <label class="text-sm">Mode:</label>
+        <select id="modeFilter" class="border rounded px-2 py-1 text-sm">
+          <option value="all" selected>All</option>
+          <option value="road">Road</option>
+          <option value="rail">Rail</option>
+          <option value="hike">Hike</option>
+        </select>
+        <label class="text-sm">Scenic:</label>
+        <select id="scenicPref" class="border rounded px-2 py-1 text-sm">
+          <option value="auto" selected>Auto</option>
+          <option value="scenic">Prefer Scenic</option>
+          <option value="fastest">Prefer Fastest</option>
+        </select>
       </div>
     </div>
   </header>
 
-  <main class="max-w-6xl mx-auto px-4 pb-20">
-    <section id="tab-itinerary" class="pt-4">
-      <div class="bg-white rounded-2xl shadow p-3 sm:p-4">
-        <div class="flex flex-col sm:flex-row sm:items-center gap-3">
-          <div class="flex items-center gap-2">
-            <label for="filterMode" class="text-sm text-gray-700 whitespace-nowrap">Show:</label>
-            <select id="filterMode" class="text-sm border rounded-md px-2 py-1">
-              <option value="all">All</option>
-              <option value="road_train">Road (Drive) + Train</option>
-              <option value="city_walk">City / Walk-Transit</option>
-            </select>
-          </div>
-          <div class="text-xs text-gray-500 sm:ml-auto">Polyline can be encoded or raw coordinates. Empty = dashed straight line.</div>
-        </div>
-        <div id="map" class="rounded-xl mt-3"></div>
-        <p class="mt-2 text-xs text-gray-500">Map tiles © OpenStreetMap contributors. Keep usage light.</p>
-      </div>
+  <main class="p-4">
+    <div id="map" class="rounded-xl border mb-4"></div>
+    <div id="legend" class="text-sm mb-4 space-y-2">
+      <div><span class="chip">Road (live OSRM)</span> <span class="chip">Rail (fixed)</span> <span class="chip">Hike (fixed)</span> <span class="chip">Dashed = placeholder</span></div>
+      <div id="warnings" class="text-amber-700"></div>
+    </div>
 
-      <div id="days" class="mt-4 space-y-4"></div>
-    </section>
-
-    <section id="tab-van" class="hidden pt-6">
-      <div id="vanCard" class="bg-white rounded-2xl shadow p-5"></div>
-    </section>
-
-    <section id="tab-about" class="hidden pt-6">
-      <article class="bg-white rounded-2xl shadow p-5 space-y-3 text-sm leading-6">
-        <h2 class="text-lg font-semibold">About this site</h2>
-        <p>Static single-file site. Data is loaded from <code>/data/itinerary_spec.txt</code> (JSON) or <code>/data/itinerary_spec.json</code> if present. If both are missing, it falls back to a tiny inline demo.</p>
-        <ul class="list-disc pl-5">
-          <li>Update trip details by editing the <code>data/</code> file in your repo (no rebuild needed).</li>
-          <li>Segments support: encoded polyline string OR array of <code>[lat,lng]</code> pairs.</li>
-          <li>If a segment has no polyline and no from/to IDs, it is skipped.</li>
-        </ul>
-      </article>
-    </section>
+    <section id="days" class="space-y-3"></section>
   </main>
 
-  <!-- Minimal inline fallback, used only if no external file exists -->
-  <script id="fallback-spec" type="application/json">
-  {"meta":{"date_anchor":"2026-08-27","timezone":"Asia/Jerusalem"},"days":[{"title":"Demo Day — Chicago","points":[{"id":"millennium_park","name":"Millennium Park","type":"city_landmark","coords":[41.8826,-87.6226],"stay_duration_min":90}],"segments":[{"mode":"walk","polyline":""}]}]}
-  </script>
-
   <script>
-    // Helpers
-    const $ = (s)=>document.querySelector(s);
-    const $$ = (s)=>Array.from(document.querySelectorAll(s));
+    // Load itinerary
+    async function loadItinerary() {
+      const res = await fetch('data/itinerary_spec.txt');
+      return res.json();
+    }
 
-    function decodePolyline(str) {
-      if (!str || typeof str !== 'string') return null;
-      let index = 0, lat = 0, lng = 0, coords = [];
-      while (index < str.length) {
-        let b, shift = 0, result = 0;
-        do { b = str.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
-        const dlat = (result & 1) ? ~(result >> 1) : (result >> 1);
-        lat += dlat;
-        shift = 0; result = 0;
-        do { b = str.charCodeAt(index++) - 63; result |= (b & 0x1f) << shift; shift += 5; } while (b >= 0x20);
-        const dlng = (result & 1) ? ~(result >> 1) : (result >> 1);
-        lng += dlng;
-        coords.push([lat*1e-5, lng*1e-5]);
+    const map = L.map('map', { scrollWheelZoom: true });
+    const osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '&copy; OpenStreetMap'
+    }).addTo(map);
+
+    const roadLayerGroup = L.layerGroup().addTo(map);
+    const fixedLayerGroup = L.layerGroup().addTo(map);
+    const markerLayer = L.layerGroup().addTo(map);
+
+    const bounds = L.latLngBounds([]);
+    const routeControls = []; // store L.Routing.Control for roads
+
+    function addMarker(p) {
+      const m = L.marker([p.coords[0], p.coords[1]]).addTo(markerLayer);
+      m.bindPopup(`<b>${p.name}</b><br/><span class='text-xs'>${p.type}</span><br/>Stay ~${p.stay_duration_min} min`,
+        { autoClose: false, closeOnClick: false });
+      bounds.extend([p.coords[0], p.coords[1]]);
+    }
+
+    function addFixedPolyline(coords, mode) {
+      const color = mode === 'rail' ? '#0ea5e9' : '#16a34a';
+      const dashArray = mode === 'placeholder' ? '6,6' : null;
+      const pl = L.polyline(coords.map(c => [c[0], c[1]]), { color, weight: 4, dashArray }).addTo(fixedLayerGroup);
+      return pl;
+    }
+
+    function routeRoad(fromPt, toPt, scenicPreferred) {
+      // scenicPreferred: 'scenic'|'fastest'|'auto'
+      // We'll switch OSRM profiles: 'driving' for fastest; for scenic we add hints (no actual OSRM scenic profile here, but we can force alternatives and pick the one with lower motorway share).
+      const plan = L.Routing.plan([
+        L.latLng(fromPt.coords[0], fromPt.coords[1]),
+        L.latLng(toPt.coords[0], toPt.coords[1])
+      ], {
+        createMarker: () => null
+      });
+
+      const control = L.Routing.control({
+        plan,
+        lineOptions: { styles: [{ color: '#ef4444', weight: 5, opacity: 0.9 }]},
+        router: L.Routing.osrmv1({
+          serviceUrl: 'https://router.project-osrm.org/route/v1',
+          profile: 'driving',
+          useHints: true
+        }),
+        routeWhileDragging: false,
+        show: false,
+        addWaypoints: false,
+        waypointMode: 'snap',
+        alternatives: true
+      }).addTo(roadLayerGroup);
+
+      control.on('routesfound', (e) => {
+        let chosen = e.routes[0];
+        if (scenicPreferred === 'scenic' || (scenicPreferred === 'auto' && (toPt.scenic_preferred || fromPt.scenic_preferred))) {
+          // naive scenic heuristic: choose alternative with shortest motorway percentage
+          let best = e.routes[0], bestScore = 1e9;
+          e.routes.forEach(r => {
+            const mway = (r.instructions || []).filter(i => /motorway/i.test(i.text)).length;
+            const score = mway * 1000 + r.summary.totalTime; // prioritize fewer motorways, then time
+            if (score < bestScore) { best = r; bestScore = score; }
+          });
+          chosen = best;
+        } else if (scenicPreferred === 'fastest') {
+          let best = e.routes[0];
+          e.routes.forEach(r => { if (r.summary.totalTime < best.summary.totalTime) best = r; });
+          chosen = best;
+        }
+        // Replace with chosen route
+        control.setRoutes([chosen]);
+        const latlngs = chosen.coordinates.map(c => [c.lat, c.lng]);
+        latlngs.forEach(ll => bounds.extend(ll));
+        map.fitBounds(bounds.pad(0.15));
+      });
+
+      routeControls.push(control);
+      return control;
+    }
+
+    function clearRoadRoutes() {
+      routeControls.forEach(rc => {
+        try { roadLayerGroup.removeLayer(rc); } catch(e) {}
+      });
+      routeControls.length = 0;
+    }
+
+    function renderDays(days, scenicPrefValue) {
+      const daysEl = document.getElementById('days');
+      daysEl.innerHTML = '';
+      clearRoadRoutes();
+      fixedLayerGroup.clearLayers();
+      markerLayer.clearLayers();
+      const warningsEl = document.getElementById('warnings');
+      warningsEl.innerHTML = '';
+
+      days.forEach(d => {
+        // Points & markers
+        (d.points || []).forEach(addMarker);
+
+        // Segments
+        (d.segments || []).forEach(seg => {
+          const from = (d.points || []).find(p => p.id === seg.from) || findPointById(days, seg.from);
+          const to = (d.points || []).find(p => p.id === seg.to) || findPointById(days, seg.to);
+          if (!from || !to) return;
+
+          if (seg.mode === 'road') {
+            routeRoad(from, to, scenicPrefValue);
+          } else if (seg.mode === 'rail' || seg.mode === 'hike') {
+            if (seg.polyline && seg.polyline.length > 1) {
+              addFixedPolyline(seg.polyline, seg.mode);
+            } else {
+              // dashed placeholder
+              const dashed = addFixedPolyline([from.coords, to.coords], 'placeholder');
+              warningsEl.innerHTML += `<div>Day ${d.day}: ${seg.mode} has no polyline — showing dashed placeholder.</div>`;
+            }
+          }
+        });
+
+        // Day card
+        const card = document.createElement('div');
+        card.className = 'border rounded-lg p-3';
+        const ptsList = (d.points || []).map(p => `<li class="text-sm"><b>${p.name}</b> <span class="chip ml-1">${p.type}</span></li>`).join('');
+        const segList = (d.segments || []).map(s => `<li class="text-xs">${s.mode.toUpperCase()} ${s.scenic_preferred ? '• scenic' : ''} ${s.polyline ? '• fixed' : ''}</li>`).join('');
+        card.innerHTML = `
+          <div class="flex items-center justify-between">
+            <h3 class="font-semibold">Day ${d.day}: ${d.title}</h3>
+            <div class="text-xs text-gray-500">${(d.segments||[]).length} segments</div>
+          </div>
+          <div class="mt-2">
+            <div class="text-xs font-medium mb-1">Points</div>
+            <ul class="list-disc ml-5 space-y-1">${ptsList}</ul>
+          </div>
+          <div class="mt-2">
+            <div class="text-xs font-medium mb-1">Segments</div>
+            <ul class="list-disc ml-5 space-y-1">${segList || '<li class="text-xs">—</li>'}</ul>
+          </div>
+        `;
+        daysEl.appendChild(card);
+      });
+
+      if (bounds.isValid()) {
+        map.fitBounds(bounds.pad(0.12));
+      } else {
+        map.setView([39.5, -98.35], 4);
       }
-      return coords;
     }
 
-    function segBadge(mode) {
-      if (mode === 'train') return '<span class="seg-badge seg-train rounded px-2 py-0.5">Train</span>';
-      if (mode === 'drive' || mode === 'rv' || mode === 'road') return '<span class="seg-badge seg-road rounded px-2 py-0.5">Drive</span>';
-      return '<span class="seg-badge seg-walk rounded px-2 py-0.5">Walk/City</span>';
-    }
-    function segColor(mode) {
-      if (mode === 'train') return '#059669';
-      if (mode === 'drive' || mode === 'rv' || mode === 'road') return '#2563eb';
-      return '#6b7280';
-    }
-    function shouldShow(mode, filter) {
-      if (filter === 'all') return true;
-      if (filter === 'road_train') return (mode === 'drive' || mode === 'rv' || mode === 'road' || mode === 'train');
-      if (filter === 'city_walk') return !(mode === 'drive' || mode === 'rv' || mode === 'road' || mode === 'train');
-      return true;
-    }
-
-    async function loadData() {
-      async function tryFetch(url) {
-        try { const res = await fetch(url, {cache:'no-store'}); if (!res.ok) throw 0; return await res.json(); } catch { return null; }
-      }
-      // try .txt (JSON content), then .json, else fallback
-      return (await tryFetch('./data/itinerary_spec.txt'))
-          || (await tryFetch('./data/itinerary_spec.json'))
-          || JSON.parse($('#fallback-spec').textContent);
-    }
-
-    const state = { data:null, map:null, layers:{points:[], segments:[]}, lastFilter:'all' };
-
-    function initMap() {
-      state.map = L.map('map', { zoomControl:true, closePopupOnClick:false });
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        maxZoom:19,
-        attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OSM</a> contributors'
-      }).addTo(state.map);
-      state.map.setView([39.5,-98.35], 4);
-    }
-
-    function clearMap() {
-      state.layers.points.forEach(l=>l.remove());
-      state.layers.segments.forEach(l=>l.remove());
-      state.layers.points = [];
-      state.layers.segments = [];
-    }
-
-    function getPointById(id) {
-      if (!id) return null;
-      for (const day of state.data.days||[]) {
-        const p = (day.points||[]).find(pp=>pp.id===id);
+    function findPointById(days, id) {
+      for (const d of days) {
+        const p = (d.points || []).find(x => x.id === id);
         if (p) return p;
       }
       return null;
     }
 
-    function toLatLngs(poly) {
-      if (!poly) return null;
-      if (typeof poly === 'string') return decodePolyline(poly);
-      if (Array.isArray(poly)) {
-        // Validate pairs; accept {lat,lng} objects too
-        return poly.map(pt => Array.isArray(pt) ? [pt[0], pt[1]] : [pt.lat, pt.lng]).filter(v=>Array.isArray(v) && v.length===2 && v[0]!=null && v[1]!=null);
-      }
-      return null;
-    }
+    (async () => {
+      const data = await loadItinerary();
+      renderDays(data.days.slice(0, 15), document.getElementById('scenicPref').value);
 
-    function renderMap(filter='all') {
-      clearMap();
-      const bounds = L.latLngBounds([]);
-
-      // markers
-      (state.data.days||[]).forEach(day=>{
-        (day.points||[]).forEach(p=>{
-          const c = p.coords;
-          const lat = Array.isArray(c) ? c[0] : (c && c.lat);
-          const lng = Array.isArray(c) ? c[1] : (c && c.lng);
-          if (lat==null || lng==null) return; // skip missing coords
-          const m = L.marker([lat,lng]).addTo(state.map);
-          const links = p.links && typeof p.links==='object'
-              ? Object.entries(p.links).map(([k,v])=>`<a class="text-blue-600 underline text-xs" target="_blank" rel="noopener" href="${v}">${k}</a>`).join(' ')
-              : '';
-          m.bindPopup(`
-            <div class="space-y-1">
-              <div class="font-semibold">${p.name||'Point'}</div>
-              <div class="text-xs text-gray-600">${p.type||''}${p.stay_duration_min?` • ~${p.stay_duration_min} min`:''}</div>
-              <div class="text-xs">${p.description||''}</div>
-              <div class="flex gap-2 flex-wrap mt-1">${links||''}</div>
-            </div>
-          `, {autoClose:false, closeButton:true});
-          state.layers.points.push(m);
-          bounds.extend([lat,lng]);
-        });
+      document.getElementById('modeFilter').addEventListener('change', (e) => {
+        const v = e.target.value;
+        // Simple visibility toggles by redrawing
+        renderDays(itinerary.days.slice(0, 15), document.getElementById('scenicPref').value);
       });
 
-      // segments
-      (state.data.days||[]).forEach(day=>{
-        (day.segments||[]).forEach(seg=>{
-          const mode = (seg.mode||'').toLowerCase();
-          if (!shouldShow(mode, filter)) return;
-
-          let latlngs = toLatLngs(seg.polyline);
-          let dashed = false;
-
-          if (!latlngs || latlngs.length<2) {
-            const a = getPointById(seg.from_point_id);
-            const b = getPointById(seg.to_point_id);
-            if (a?.coords && b?.coords) {
-              const aC = Array.isArray(a.coords) ? a.coords : [a.coords.lat, a.coords.lng];
-              const bC = Array.isArray(b.coords) ? b.coords : [b.coords.lat, b.coords.lng];
-              latlngs = [aC, bC];
-              dashed = true;
-            }
-          }
-
-          if (latlngs && latlngs.length>=2) {
-            const line = L.polyline(latlngs, {
-              color: segColor(mode),
-              weight:4,
-              opacity:0.95,
-              dashArray: dashed ? '6,8' : (Array.isArray(seg.polyline) && seg.polyline.length<3 ? '6,8' : null)
-            }).addTo(state.map);
-            line.bindPopup(`<div>${segBadge(mode)} <span class="ml-2 text-xs text-gray-600">${day.title||''}</span></div>`, {autoClose:false});
-            state.layers.segments.push(line);
-            latlngs.forEach(ll=>bounds.extend(ll));
-          }
-        });
+      document.getElementById('scenicPref').addEventListener('change', (e) => {
+        const v = e.target.value;
+        renderDays(itinerary.days.slice(0, 15), v);
       });
 
-      if (bounds.isValid()) state.map.fitBounds(bounds.pad(0.2));
-    }
-
-    function renderDays() {
-      const root = $('#days'); root.innerHTML='';
-      (state.data.days||[]).forEach((day, i)=>{
-        const segBadges = (day.segments||[]).map(s=>segBadge((s.mode||'').toLowerCase())).join(' ');
-        const pts = (day.points||[]).map(p=>{
-          const dur = p.stay_duration_min?` • ~${p.stay_duration_min} min`:'';
-          return `
-          <li class="flex items-start gap-3">
-            <div class="w-2 h-2 rounded-full bg-gray-400 mt-2"></div>
-            <div>
-              <div class="font-medium">${p.name||'Point'}</div>
-              <div class="text-xs text-gray-600">${p.type||''}${dur}</div>
-              <div class="text-sm">${p.description||''}</div>
-            </div>
-          </li>`;
-        }).join('');
-
-        const sleep = day.summary?.sleep ? day.summary.sleep : '—';
-
-        const card = document.createElement('article');
-        card.className = 'bg-white rounded-2xl shadow p-4';
-        card.innerHTML = `
-          <div class="flex items-center gap-2 mb-2">
-            <h3 class="text-lg font-semibold">${day.title || ('Day ' + (i+1))}</h3>
-            <div class="ml-auto flex items-center gap-2">${segBadges}</div>
-          </div>
-          <ul class="space-y-3">${pts}</ul>
-          <div class="mt-3 text-sm text-gray-600"><span class="font-medium">Sleep:</span> ${sleep}</div>
-        `;
-        root.appendChild(card);
-      });
-    }
-
-    function renderVan() {
-      const v = state.data?.meta?.van;
-      const el = $('#vanCard');
-      if (!v) { el.innerHTML = '<div class="text-sm text-gray-600">No van data in spec.</div>'; return; }
-      el.innerHTML = `
-        <div class="space-y-2">
-          <h2 class="text-xl font-semibold">Van Details</h2>
-          <pre class="text-xs bg-gray-50 p-3 rounded border overflow-x-auto">${JSON.stringify(v, null, 2)}</pre>
-          <p class="text-sm text-gray-600">Customize this section once van fields are finalized.</p>
-        </div>
-      `;
-    }
-
-    $('#filterMode').addEventListener('change', e=>{ state.lastFilter = e.target.value; renderMap(state.lastFilter); });
-    $$('.tab-btn').forEach(btn=>btn.addEventListener('click', ()=>{
-      const tab = btn.dataset.tab;
-      $$('.tab-btn').forEach(b=>{
-        const active = b.dataset.tab===tab;
-        b.classList.toggle('tab-active', active);
-        b.classList.toggle('tab-inactive', !active);
-      });
-      $('#tab-itinerary').classList.toggle('hidden', tab!=='itinerary');
-      $('#tab-van').classList.toggle('hidden', tab!=='van');
-      $('#tab-about').classList.toggle('hidden', tab!=='about');
-      if (tab==='itinerary' && state.map) setTimeout(()=>state.map.invalidateSize(), 100);
-    }));
-
-    (async function init(){
-      state.data = await loadData();
-      // Backward-compat: if date anchor missing, set a safe default (per project spec default)
-      if (!state.data.meta) state.data.meta = {};
-      if (!state.data.meta.date_anchor) state.data.meta.date_anchor = '2026-08-27';
-      initMap();
-      renderDays();
-      renderMap(state.lastFilter);
-      renderVan();
+      // keep a reference for re-render
+      window.itinerary = data;
     })();
   </script>
 </body>
