@@ -1,10 +1,11 @@
 # Site Requirements (EN)
-- Single HTML file (Tailwind + Leaflet via CDN)
-- Mobile-first
-- Map w/ filters: days, modes (road/rail/hike), scenic vs. fast
-- Roads: live via OSRM (dynamic). Rail/Hike: fixed polylines.
-- Day cards show: title, points, segments, sleep location.
-- Popup open smoothly (avoid close-on-first-click)
-- If segment polyline empty → render dashed placeholder + warning.
-- Date anchor: 2026-08-27 (display local times in city)
+
+- Single HTML (Tailwind + Leaflet via CDN)
+- Map shows days with filters/toggles (mode: road/rail/hike; scenic vs fastest)
+- Roads: live via OSRM (dynamic). Rail/Hike: fixed polylines (encoded or raw). Empty → dashed straight line.
+- Day cards: title, points, segments, sleep location
+- Popups smooth (avoid close-on-first-click)
+- Date anchor: 2026-08-27 (display local times per city)
 - Van tab with vehicle info
+- Images: lazy-load, responsive when added later
+- Polyline support: encoded/raw
