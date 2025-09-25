@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>USA Van+Rail — Itinerary Viewer</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-sA+e2Hc0g6w3wQqXgq4t5G4w0k/4s4b6f3gG1YwQb0M=" crossorigin=""/>
+</head>
+<body>
+  <header>
+    <h1>USA Van+Rail — Itinerary Viewer</h1>
+    <div class="controls">
+      <label>Day 1 landing date/time:
+        <input id="landingDate" type="date"/>
+        <input id="landingTime" type="time" value="10:00"/>
+      </label>
+      <button id="applyLanding">Apply</button>
+      <span id="status" class="status"></span>
+    </div>
+  </header>
+
+  <main>
+    <aside id="sidebar">
+      <div id="daysList">Loading itinerary...</div>
+    </aside>
+
+    <section id="mapAndDetails">
+      <div id="map" tabindex="0"></div>
+      <div id="details">
+        <h2>Selected Item</h2>
+        <div id="selectedContent">Click a stop or route to see details.</div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <small>Built for product owner — drop-in deploy to GitHub Pages. Ensure /itinerary_spec.txt exists in repo root.</small>
+  </footer>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-o9N1j7k9gkqY0fB3rjv1o2y2r3m+6m2g5G1YwQb0M=" crossorigin=""></script>
+
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
