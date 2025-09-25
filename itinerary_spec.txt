@@ -1,4 +1,446 @@
 {
-  "points": [],
-  "segments": []
+  "meta": {
+    "title": "15-day sample itinerary (auto-generated)",
+    "generated_by": "assistant",
+    "version": "v1",
+    "notes": "This is a starter itinerary with 15 stops (one per day). Replace descriptions, parking, price_estimate and adjust coords if you want higher accuracy."
+  },
+  "points": [
+    {
+      "id": "day-01-nyc",
+      "name": "New York, NY",
+      "type": "city",
+      "coords": [
+        40.7128,
+        -74.006
+      ],
+      "stay_duration_min": 1440,
+      "description": "התחלה בניו יורק — זמן להסתגל, לבדוק ציוד ולהתחיל את המסלול.",
+      "parking": "חנייה בתשלום/חניוני רחוב",
+      "price_estimate": "$120-250",
+      "slug": "nyc"
+    },
+    {
+      "id": "day-02-shenandoah",
+      "name": "Shenandoah National Park (VA)",
+      "type": "national_park",
+      "coords": [
+        38.53,
+        -78.35
+      ],
+      "stay_duration_min": 1440,
+      "description": "פארק יפייפה עם נוף ל-Blue Ridge. מסלולי הליכה קלים ובינוניים.",
+      "parking": "חניוני פארק",
+      "price_estimate": "$0-30",
+      "slug": "shenandoah"
+    },
+    {
+      "id": "day-03-great-smoky",
+      "name": "Great Smoky Mountains NP (TN/NC)",
+      "type": "national_park",
+      "coords": [
+        35.6118,
+        -83.4895
+      ],
+      "stay_duration_min": 1440,
+      "description": "פארק לאומי מפורסם — מסלולי הייקינג ונופים ירוקים.",
+      "parking": "חניוני פארק",
+      "price_estimate": "$0-30",
+      "slug": "great-smoky"
+    },
+    {
+      "id": "day-04-atlanta",
+      "name": "Atlanta, GA",
+      "type": "city",
+      "coords": [
+        33.749,
+        -84.388
+      ],
+      "stay_duration_min": 1440,
+      "description": "עיר תוססת עם תרבות, מוזיאונים ואוכל דרום-ארה\"ב.",
+      "parking": "חניונים בעיר",
+      "price_estimate": "$80-180",
+      "slug": "atlanta"
+    },
+    {
+      "id": "day-05-orlando",
+      "name": "Orlando / Disney Area, FL",
+      "type": "town",
+      "coords": [
+        28.5383,
+        -81.3792
+      ],
+      "stay_duration_min": 1440,
+      "description": "פארקי שעשועים ופעילויות — מתאים ליום שלם או יומיים.",
+      "parking": "חנייה פארק/אתר",
+      "price_estimate": "$100-300",
+      "slug": "orlando"
+    },
+    {
+      "id": "day-06-memphis",
+      "name": "Memphis, TN",
+      "type": "city",
+      "coords": [
+        35.1495,
+        -90.049
+      ],
+      "stay_duration_min": 1440,
+      "description": "מוזיקת בלוז, גרייסלנד, ומאכלים דרומיים.",
+      "parking": "חניונים בעיר",
+      "price_estimate": "$70-150",
+      "slug": "memphis"
+    },
+    {
+      "id": "day-07-dallas",
+      "name": "Dallas, TX",
+      "type": "city",
+      "coords": [
+        32.7767,
+        -96.797
+      ],
+      "stay_duration_min": 1440,
+      "description": "עיר גדולה עם מוזיאונים וסצינה קולינרית מגוונת.",
+      "parking": "חניונים/שדרות",
+      "price_estimate": "$90-200",
+      "slug": "dallas"
+    },
+    {
+      "id": "day-08-denver",
+      "name": "Denver, CO",
+      "type": "city",
+      "coords": [
+        39.7392,
+        -104.9903
+      ],
+      "stay_duration_min": 1440,
+      "description": "כניסה להרי הרוקי — גישה לטבע ולמסלולי הייקינג.",
+      "parking": "חניונים",
+      "price_estimate": "$90-220",
+      "slug": "denver"
+    },
+    {
+      "id": "day-09-las-vegas",
+      "name": "Las Vegas, NV",
+      "type": "city",
+      "coords": [
+        36.1699,
+        -115.1398
+      ],
+      "stay_duration_min": 1440,
+      "description": "מופעים, קזינו ונופים בסביבה (Red Rock).",
+      "parking": "חניונים/חניון המלון",
+      "price_estimate": "$80-250",
+      "slug": "las-vegas"
+    },
+    {
+      "id": "day-10-san-diego",
+      "name": "San Diego, CA",
+      "type": "city",
+      "coords": [
+        32.7157,
+        -117.1611
+      ],
+      "stay_duration_min": 1440,
+      "description": "חופים, מוזיאונים ותחושת חופשה דרומית.",
+      "parking": "חניונים בחוף",
+      "price_estimate": "$90-220",
+      "slug": "san-diego"
+    },
+    {
+      "id": "day-11-los-angeles",
+      "name": "Los Angeles, CA",
+      "type": "city",
+      "coords": [
+        34.0522,
+        -118.2437
+      ],
+      "stay_duration_min": 1440,
+      "description": "מלון, חופים, ושכונות מגוון (Hollywood, Venice).",
+      "parking": "חניונים/רחוב",
+      "price_estimate": "$100-300",
+      "slug": "los-angeles"
+    },
+    {
+      "id": "day-12-yosemite",
+      "name": "Yosemite National Park, CA",
+      "type": "national_park",
+      "coords": [
+        37.8651,
+        -119.5383
+      ],
+      "stay_duration_min": 1440,
+      "description": "פארק איקוני — צוקי גרנייט, מפלים ומסלולי הליכה.",
+      "parking": "חניוני פארק",
+      "price_estimate": "$0-35",
+      "slug": "yosemite"
+    },
+    {
+      "id": "day-13-san-francisco",
+      "name": "San Francisco, CA",
+      "type": "city",
+      "coords": [
+        37.7749,
+        -122.4194
+      ],
+      "stay_duration_min": 1440,
+      "description": "גשרים, שכונות היסטוריות, ומבחר קולינרי.",
+      "parking": "חניונים מוגבלים",
+      "price_estimate": "$120-300",
+      "slug": "san-francisco"
+    },
+    {
+      "id": "day-14-seattle",
+      "name": "Seattle, WA",
+      "type": "city",
+      "coords": [
+        47.6062,
+        -122.3321
+      ],
+      "stay_duration_min": 1440,
+      "description": "נמל, שווקים ותצפיות — תחנה צפונית במסע.",
+      "parking": "חניונים/רחוב",
+      "price_estimate": "$100-250",
+      "slug": "seattle"
+    },
+    {
+      "id": "day-15-chicago",
+      "name": "Chicago, IL",
+      "type": "city",
+      "coords": [
+        41.8781,
+        -87.6298
+      ],
+      "stay_duration_min": 1440,
+      "description": "סיום ראשוני: תרבות, אוכל ושיבות אורבניות לפני חזרה.",
+      "parking": "חניונים בעיר",
+      "price_estimate": "$90-220",
+      "slug": "chicago"
+    }
+  ],
+  "segments": [
+    {
+      "id": "seg-01",
+      "from": "day-01-nyc",
+      "to": "day-02-shenandoah",
+      "polyline": [
+        [
+          40.7128,
+          -74.006
+        ],
+        [
+          38.53,
+          -78.35
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-02",
+      "from": "day-02-shenandoah",
+      "to": "day-03-great-smoky",
+      "polyline": [
+        [
+          38.53,
+          -78.35
+        ],
+        [
+          35.6118,
+          -83.4895
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-03",
+      "from": "day-03-great-smoky",
+      "to": "day-04-atlanta",
+      "polyline": [
+        [
+          35.6118,
+          -83.4895
+        ],
+        [
+          33.749,
+          -84.388
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-04",
+      "from": "day-04-atlanta",
+      "to": "day-05-orlando",
+      "polyline": [
+        [
+          33.749,
+          -84.388
+        ],
+        [
+          28.5383,
+          -81.3792
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-05",
+      "from": "day-05-orlando",
+      "to": "day-06-memphis",
+      "polyline": [
+        [
+          28.5383,
+          -81.3792
+        ],
+        [
+          35.1495,
+          -90.049
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-06",
+      "from": "day-06-memphis",
+      "to": "day-07-dallas",
+      "polyline": [
+        [
+          35.1495,
+          -90.049
+        ],
+        [
+          32.7767,
+          -96.797
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-07",
+      "from": "day-07-dallas",
+      "to": "day-08-denver",
+      "polyline": [
+        [
+          32.7767,
+          -96.797
+        ],
+        [
+          39.7392,
+          -104.9903
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-08",
+      "from": "day-08-denver",
+      "to": "day-09-las-vegas",
+      "polyline": [
+        [
+          39.7392,
+          -104.9903
+        ],
+        [
+          36.1699,
+          -115.1398
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-09",
+      "from": "day-09-las-vegas",
+      "to": "day-10-san-diego",
+      "polyline": [
+        [
+          36.1699,
+          -115.1398
+        ],
+        [
+          32.7157,
+          -117.1611
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-10",
+      "from": "day-10-san-diego",
+      "to": "day-11-los-angeles",
+      "polyline": [
+        [
+          32.7157,
+          -117.1611
+        ],
+        [
+          34.0522,
+          -118.2437
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-11",
+      "from": "day-11-los-angeles",
+      "to": "day-12-yosemite",
+      "polyline": [
+        [
+          34.0522,
+          -118.2437
+        ],
+        [
+          37.8651,
+          -119.5383
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-12",
+      "from": "day-12-yosemite",
+      "to": "day-13-san-francisco",
+      "polyline": [
+        [
+          37.8651,
+          -119.5383
+        ],
+        [
+          37.7749,
+          -122.4194
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-13",
+      "from": "day-13-san-francisco",
+      "to": "day-14-seattle",
+      "polyline": [
+        [
+          37.7749,
+          -122.4194
+        ],
+        [
+          47.6062,
+          -122.3321
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    },
+    {
+      "id": "seg-14",
+      "from": "day-14-seattle",
+      "to": "day-15-chicago",
+      "polyline": [
+        [
+          47.6062,
+          -122.3321
+        ],
+        [
+          41.8781,
+          -87.6298
+        ]
+      ],
+      "notes": "Polyline זמני בקו ישר בין נקודות; ניתן להחליף ב-encoded_polyline מדויק לפי בחירה."
+    }
+  ]
 }
