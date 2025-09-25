@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>USA Van+Rail — Itinerary Viewer</title>
   <link rel="stylesheet" href="assets/css/styles.css" />
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-    integrity="sha256-sA+e2Hc0g6w3wQqXgq4t5G4w0k/4s4b6f3gG1YwQb0M=" crossorigin=""/>
+  <!-- Leaflet CSS (no SRI here to avoid mismatch on GitHub Pages) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
 </head>
 <body>
   <header>
@@ -40,9 +39,8 @@
     <small>Built for product owner — drop-in deploy to GitHub Pages. Ensure /itinerary_spec.txt exists in repo root.</small>
   </footer>
 
-  <!-- Leaflet JS -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-    integrity="sha256-o9N1j7k9gkqY0fB3rjv1o2y2r3m+6m2g5G1YwQb0M=" crossorigin=""></script>
+  <!-- Leaflet JS (no SRI/crossorigin) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script src="assets/js/app.js"></script>
 </body>
