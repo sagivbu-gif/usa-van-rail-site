@@ -1,0 +1,34 @@
+{
+  "airport": [
+    "icon-stop.svg",
+    "icon-airport.svg"
+  ],
+  "hotel": [
+    "icon-stop.svg",
+    "icon-hotel.svg"
+  ],
+  "hotel_night": [
+    "icon-stop.svg",
+    "icon-hotel.svg"
+  ],
+  "poi": [
+    "icon-stop.svg",
+    "icon-route.svg"
+  ],
+  "transfer": [
+    "icon-route.svg",
+    "icon-van.svg"
+  ],
+  "travel_day": [
+    "icon-route.svg",
+    "icon-van.svg"
+  ],
+  "train": [
+    "icon-route.svg",
+    "icon-train.svg"
+  ],
+  "walk": [
+    "icon-route.svg",
+    "icon-walk.svg"
+  ]
+}

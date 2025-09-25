@@ -1,1 +1,17 @@
-
+{
+  "baggage_claim_minutes": 120,
+  "rental_pickup_minutes": 45,
+  "hotel_checkin_minutes": 150,
+  "avg_speed_highway_kmh": 90,
+  "avg_speed_city_kmh": 30,
+  "stop_every_minutes": 150,
+  "stop_duration_minutes": 30,
+  "traffic_buffer": 1.2,
+  "show_polyline_for": [
+    "transfer",
+    "travel_day",
+    "intercity",
+    "train",
+    "hike"
+  ]
+}
