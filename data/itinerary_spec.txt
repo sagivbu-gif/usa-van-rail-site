@@ -1,6 +1,6 @@
-# Itinerary Spec (15 Days, updated 2025-09-25)
-# Schema: v2.2 (stops + segments)
-# Anchor Date: 2026-08-23
+# Itinerary Spec (15 Days, COMPLETE) – updated 2025-09-25
+# Schema: v2.2  (unified point type = `stop`; segments connect stops)
+# Anchor Date: 2026-08-23  (Arrival NYC)  — all days derive automatically
 
 trip:
   id: usa-van-rail-2026
@@ -9,10 +9,14 @@ trip:
   timezone: Asia/Jerusalem
   vehicle: class-c-28ft
   day_start_local: "09:00"
+  notes: >
+    All times computed client-side from anchor + stay durations + segment travel time (OSRM for road,
+    fixed/min-estimates for hike/transit). Images intentionally omitted at this stage.
 
 days:
   - day: 1
     title: Arrival in New York City
+    day_start_local: "10:30"
     points:
       - id: nyc_arrival
         name: JFK Airport
@@ -23,34 +27,35 @@ days:
         parking: { kind: "none" }
         price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
       - id: nyc_hotel
-        name: Manhattan Hotel
+        name: Manhattan Hotel (Midtown)
         type: stop
         coords: { lat: 40.758, lng: -73.9855 }
         stay_duration_min: 720
         description: Overnight stay in Midtown Manhattan (sleep).
-        parking: { kind: "garage" }
+        parking: { kind: "garage", price_hint_usd_per_day: 60 }
         price_estimate: { currency: "USD", amount_min: 200, amount_max: 300 }
     segments:
       - mode: transit
         from: nyc_arrival
         to: nyc_hotel
         duration_min: 60
+        notes: "AirTrain + Subway/Taxi; flexible"
 
   - day: 2
     title: Explore New York City (City Day)
     points:
       - id: nyc_city_day
-        name: New York City exploration
+        name: NYC walking/transit day
         type: stop
         coords: { lat: 40.758, lng: -73.9855 }
-        stay_duration_min: 480
-        description: Walking + subway between main sights.
+        stay_duration_min: 540
+        description: Walking + subway between main sights. No fixed driving route.
         parking: { kind: "none" }
         price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
     segments: []
 
   - day: 3
-    title: NYC → Shenandoah (Front Royal)
+    title: NYC → Shenandoah (Front Royal) via I-95/I-66
     points:
       - id: nyc_pickup_van
         name: RV Pickup (NYC area)
@@ -64,8 +69,8 @@ days:
         name: Shenandoah NP – Front Royal Entrance
         type: stop
         coords: { lat: 38.9183, lng: -78.1945 }
-        stay_duration_min: 120
-        description: Skyline Drive begins; scenic overlooks.
+        stay_duration_min: 60
+        description: North entrance to Skyline Drive; fee station.
         parking: { kind: "lot" }
         price_estimate: { currency: "USD", amount_min: 35, amount_max: 35 }
       - id: luray_rv_park
@@ -73,33 +78,31 @@ days:
         type: stop
         coords: { lat: 38.665, lng: -78.459 }
         stay_duration_min: 720
-        description: Full hookups near Luray.
+        description: Full hookups near Luray Caverns and Shenandoah.
         parking: { kind: "rv_hookup" }
-        price_estimate: { currency: "USD", amount_min: 55, amount_max: 75 }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 85 }
     segments:
       - mode: road
         from: nyc_pickup_van
         to: shenandoah_np_front_royal
         alt_routes:
-          scenic:
-            polyline: ""
+          scenic: { polyline: "" }
       - mode: road
         from: shenandoah_np_front_royal
         to: luray_rv_park
         alt_routes:
-          scenic:
-            polyline: ""
+          scenic: { polyline: "" }
 
   - day: 4
-    title: Skyline Drive day → Waynesboro
+    title: Skyline Drive day → Waynesboro (Rockfish Gap)
     points:
       - id: skyline_overlooks
-        name: Skyline Drive Overlooks (stops)
+        name: Skyline Drive Overlooks
         type: stop
         coords: { lat: 38.5, lng: -78.7 }
         stay_duration_min: 180
-        description: Scenic pullouts along Skyline Drive.
-        parking: { kind: "lot" }
+        description: Scenic pullouts on Skyline Drive.
+        parking: { kind: "pullouts" }
         price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
       - id: waynesboro_rv
         name: Waynesboro RV Campground (sleep)
@@ -108,7 +111,7 @@ days:
         stay_duration_min: 720
         description: Overnight near Blue Ridge Parkway start.
         parking: { kind: "rv_hookup" }
-        price_estimate: { currency: "USD", amount_min: 55, amount_max: 75 }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 85 }
     segments:
       - mode: road
         from: luray_rv_park
@@ -123,13 +126,13 @@ days:
     title: Blue Ridge Parkway → Great Smoky Mountains (Gatlinburg)
     points:
       - id: gsmnp_sugarlands
-        name: Great Smoky Mountains NP – Sugarlands
+        name: Great Smoky Mountains NP – Sugarlands VC
         type: stop
-        coords: { lat: 35.680, lng: -83.536 }
-        stay_duration_min: 120
-        description: Visitor center and scenic loops.
+        coords: { lat: 35.6858, lng: -83.5368 }
+        stay_duration_min: 60
+        description: Visitor center + trip planning.
         parking: { kind: "lot" }
-        price_estimate: { currency: "USD", amount_min: 35, amount_max: 35 }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
       - id: gatlinburg_rv
         name: Gatlinburg/Pigeon Forge RV Resort (sleep)
         type: stop
@@ -137,7 +140,7 @@ days:
         stay_duration_min: 720
         description: Full hookups near attractions.
         parking: { kind: "rv_hookup" }
-        price_estimate: { currency: "USD", amount_min: 55, amount_max: 85 }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 95 }
     segments:
       - mode: road
         from: waynesboro_rv
@@ -146,20 +149,51 @@ days:
       - mode: road
         from: gsmnp_sugarlands
         to: gatlinburg_rv
-        alt_routes: { scenic: { polyline: "" } }
 
   - day: 6
-    title: Smokies exploration (City Day)
+    title: Smokies hiking day – Alum Cave Bluffs
+    day_start_local: "08:00"
     points:
-      - id: gsmnp_city_day
-        name: Great Smoky Mountains – exploration day
+      - id: alum_trailhead
+        name: Alum Cave Trailhead (US-441)
         type: stop
-        coords: { lat: 35.714, lng: -83.510 }
-        stay_duration_min: 480
-        description: Park shuttles/guided tours; no fixed driving route.
+        coords: { lat: 35.629553, lng: -83.451443 }
+        stay_duration_min: 15
+        description: Popular trailhead; arrive early for parking.
+        parking: { kind: "lot" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+      - id: alum_bluffs
+        name: Alum Cave Bluffs (turnaround point)
+        type: stop
+        coords: { lat: 35.63934, lng: -83.447471 }
+        stay_duration_min: 30
+        description: Scenic bluffs; turnaround for 4.6mi RT hike.
         parking: { kind: "none" }
         price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
-    segments: []
+      - id: gatlinburg_rv_return
+        name: Return to RV Resort (sleep)
+        type: stop
+        coords: { lat: 35.808, lng: -83.579 }
+        stay_duration_min: 720
+        description: Rest after hike.
+        parking: { kind: "rv_hookup" }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 95 }
+    segments:
+      - mode: road
+        from: gatlinburg_rv
+        to: alum_trailhead
+      - mode: hike
+        from: alum_trailhead
+        to: alum_bluffs
+        duration_min: 150
+        notes: "NPS: 4.6mi/7.4km RT to bluffs; 2.5h–3.5h typical"
+      - mode: hike
+        from: alum_bluffs
+        to: alum_trailhead
+        duration_min: 120
+      - mode: road
+        from: alum_trailhead
+        to: gatlinburg_rv_return
 
   - day: 7
     title: Gatlinburg → Atlanta
@@ -170,11 +204,11 @@ days:
         coords: { lat: 33.781, lng: -84.388 }
         stay_duration_min: 720
         description: Overnight in Atlanta with garage parking.
-        parking: { kind: "garage" }
+        parking: { kind: "garage", price_hint_usd_per_day: 30 }
         price_estimate: { currency: "USD", amount_min: 25, amount_max: 35 }
     segments:
       - mode: road
-        from: gatlinburg_rv
+        from: gatlinburg_rv_return
         to: atlanta_hotel
 
   - day: 8
@@ -184,7 +218,7 @@ days:
         name: Atlanta exploration
         type: stop
         coords: { lat: 33.760, lng: -84.393 }
-        stay_duration_min: 480
+        stay_duration_min: 540
         description: Aquarium/Civil Rights Center; walk/transit.
         parking: { kind: "none" }
         price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
@@ -200,7 +234,7 @@ days:
         stay_duration_min: 720
         description: Full hookups near theme parks.
         parking: { kind: "rv_hookup" }
-        price_estimate: { currency: "USD", amount_min: 55, amount_max: 85 }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 95 }
     segments:
       - mode: road
         from: atlanta_hotel
