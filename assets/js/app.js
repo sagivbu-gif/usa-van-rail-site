@@ -1,7 +1,6 @@
 // Minimal app.js that fetches /itinerary_spec.txt and assets/config files.
 // Renders day cards in sidebar and a Leaflet map with points & simple polylines.
 // Guards for missing coords and returns clear console errors.
-// Works on GitHub Pages if files are placed as instructed.
 
 async function fetchJSON(path) {
   const res = await fetch(path);
@@ -27,17 +26,12 @@ function initMap() {
 function iconFor(type) {
   const mapping = iconsMap[type] || null;
   if (!mapping) return null;
-  // mapping is [primary, secondary] filenames under assets/icons/
   const html = `<span class="badge"><img src="assets/icons/${mapping[1]}" alt="" style="width:20px;height:20px;vertical-align:middle"/></span>`;
   return html;
 }
 
-function formatTime(t) {
-  if (!t) return '';
-  return t;
-}
+function formatTime(t) { return t || ''; }
 
-// Render sidebar days
 function renderSidebar(itinerary) {
   const container = document.getElementById('daysList');
   container.innerHTML = '';
@@ -67,7 +61,6 @@ function renderSidebar(itinerary) {
   });
 }
 
-// Render map points and polylines
 function renderMap(itinerary) {
   if (!map) initMap();
   markersLayer.clearLayers();
@@ -84,7 +77,6 @@ function renderMap(itinerary) {
         allCoords.push([coords[0], coords[1]]);
       }
     });
-    // simple polyline for transfers if allowed
     day.stops && day.stops.forEach(stop => {
       if (stop.type === 'transfer' || stop.type === 'travel_day' || stop.type === 'train') {
         let from = stop.from_coords || stop.coords || null;
@@ -115,37 +107,28 @@ function onSelectStop(stop) {
     <div style="margin-top:6px"><em>Raw coords:</em> ${stop.coords ? stop.coords.join(', ') : (stop.from_coords ? stop.from_coords.join(', '): '-')}</div>`;
 }
 
-// Compute schedule from landing date/time using defaults (simple forward pass)
 function computeSchedule(itin, landingDate, landingTime) {
   if (!itin || !itin.days) return itin;
   const baggage = defaults.baggage_claim_minutes || 120;
   const hotel_checkin = defaults.hotel_checkin_minutes || 150;
-  // Set initial landing day/time to first stop that's airport arrival
   let landingDateTime = null;
   if (landingDate && landingTime) {
     landingDateTime = landingDate + 'T' + landingTime;
   }
-  // Helper: add minutes to ISO-like string (YYYY-MM-DDTHH:MM)
   function addMinutes(iso, mins) {
     const d = new Date(iso);
     d.setMinutes(d.getMinutes() + mins);
     return d.toISOString().slice(0,16);
   }
-  // if user provided landingDateTime, use it to compute first airport departure
   if (landingDateTime) {
-    // find first airport stop
     for (const day of itin.days) {
       for (const stop of day.stops) {
         if (stop.type === 'airport') {
-          // arrival_time store as HH:MM
           const arr = landingDate + 'T' + landingTime;
           stop.computed = stop.computed || {};
           stop.computed.arrival_time = landingTime;
           const dep = addMinutes(arr, baggage);
           stop.computed.departure_time = dep.slice(11);
-          // find next transfer that depends on this
-          // naive: find next stop in same day with computed.departure_time unset
-          // set its arrival as dep + transfer.drive_minutes
           let nextIndex = day.stops.indexOf(stop) + 1;
           if (nextIndex < day.stops.length) {
             const next = day.stops[nextIndex];
@@ -155,13 +138,10 @@ function computeSchedule(itin, landingDate, landingTime) {
               next.computed = next.computed || {};
               next.computed.departure_time = dep.slice(11);
               next.computed.arrival_time = arrivalNext.slice(11);
-              // hotel arrival if next->to_coords matches hotel
               if (next.to_coords && next.to_coords.length===2) {
-                // find matching stop with coords
                 for (const s of day.stops) {
                   if (s.coords && s.coords[0]===next.to_coords[0] && s.coords[1]===next.to_coords[1]) {
                     s.computed = s.computed || {};
-                    // set arrival and departure after hotel_checkin
                     s.computed.arrival_time = arrivalNext.slice(11);
                     const hotelDep = addMinutes(arrivalNext, hotel_checkin);
                     s.computed.departure_time = hotelDep.slice(11);
@@ -184,9 +164,7 @@ async function main() {
     defaults = await fetchJSON('assets/config/defaults.json');
     iconsMap = await fetchJSON('assets/config/icons_map.json');
     itinerary = await fetchJSON('/itinerary_spec.txt');
-    // If /itinerary_spec.txt returned HTML (GH pages misplacement), throw helpful error:
     if (!itinerary.days) throw new Error('Parsed itinerary missing "days" array. Ensure /itinerary_spec.txt is at site root and returns JSON.');
-    // Setup landing inputs default if available
     if (itinerary.start_date) {
       document.getElementById('landingDate').value = itinerary.start_date;
     } else if (itinerary.days && itinerary.days[0] && itinerary.days[0].date) {
@@ -198,7 +176,6 @@ async function main() {
     renderSidebar(itinerary);
     initMap();
     renderMap(itinerary);
-    // initial compute schedule
     const landingDate = document.getElementById('landingDate').value;
     const landingTime = document.getElementById('landingTime').value;
     itinerary = computeSchedule(itinerary, landingDate, landingTime);
@@ -218,9 +195,7 @@ document.getElementById('applyLanding').addEventListener('click', () => {
     itinerary = computeSchedule(itinerary, landingDate, landingTime);
     renderSidebar(itinerary);
     renderMap(itinerary);
-  } catch (e) {
-    console.error(e);
-  }
+  } catch (e) { console.error(e); }
 });
 
 main();
