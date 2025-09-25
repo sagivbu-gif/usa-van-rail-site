@@ -44,7 +44,8 @@
           "summary": "Drive to Shenandoah NP (partial)",
           "distance_text": "240 mi",
           "duration_text": "~4.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "opwwFjhqbMfr`Nbys["
         }
       ]
     },
@@ -87,7 +88,8 @@
           "summary": "Drive toward Great Smoky Mountains",
           "distance_text": "~500 mi",
           "duration_text": "~8.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "g}uhFnbf_NnojOzlj\\"
         }
       ]
     },
@@ -130,7 +132,8 @@
           "summary": "Drive to Atlanta",
           "distance_text": "~200 mi",
           "duration_text": "~3.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "wljxEjpq|NnyjJrnnD"
         }
       ]
     },
@@ -173,7 +176,8 @@
           "summary": "Drive to Orlando",
           "distance_text": "~440 mi",
           "duration_text": "~6.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "gr~lE~_abOzux^_tjQ"
         }
       ]
     },
@@ -216,7 +220,8 @@
           "summary": "Long drive to Memphis (multi-day)",
           "distance_text": "~700 mi",
           "duration_text": "~10-12 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "k{dmD~juoN_gjg@fi|s@"
         }
       ]
     },
@@ -259,7 +264,8 @@
           "summary": "Drive to Dallas",
           "distance_text": "~450 mi",
           "duration_text": "~7 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "kcpuEfurdP~lnM~}dh@"
         }
       ]
     },
@@ -302,7 +308,8 @@
           "summary": "Drive across Texas plains",
           "distance_text": "~360 mi",
           "duration_text": "~5.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "ku`gEftxmQcr|Mjgv]"
         }
       ]
     },
@@ -345,7 +352,8 @@
           "summary": "Drive to Denver through plains and foothills",
           "distance_text": "~430 mi",
           "duration_text": "~7 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "oh~uEr|olRogqZv~gR"
         }
       ]
     },
@@ -388,7 +396,8 @@
           "summary": "Drive to Arches / Moab area",
           "distance_text": "~350 mi",
           "duration_text": "~6 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "_qpqFj|x_SzubFzoyZ"
         }
       ]
     },
@@ -431,7 +440,8 @@
           "summary": "Cross to Las Vegas (long drive)",
           "distance_text": "~460 mi",
           "duration_text": "~7.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "czljFfms{SfltMnxba@"
         }
       ]
     },
@@ -474,7 +484,8 @@
           "summary": "Drive to San Diego",
           "distance_text": "~330 mi",
           "duration_text": "~5.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "{lw{Evfw}TvsaTbxiK"
         }
       ]
     },
@@ -517,7 +528,8 @@
           "summary": "Short drive up the coast to LA",
           "distance_text": "~120 mi",
           "duration_text": "~2.5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "cxtfEz_bjUc`dGfmrE"
         }
       ]
     },
@@ -560,7 +572,8 @@
           "summary": "Drive to Yosemite National Park",
           "distance_text": "~280 mi",
           "duration_text": "~6 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "gyynEbnupUsugVfz{F"
         }
       ]
     },
@@ -603,7 +616,8 @@
           "summary": "Drive to San Francisco",
           "distance_text": "~170 mi",
           "duration_text": "~4-5 h",
-          "polyline": ""
+          "polyline": "",
+          "encoded_polyline": "{obfFjirxUvrPzuqP"
         }
       ]
     },
@@ -646,7 +660,7 @@
           "summary": "Amtrak: Empire Builder (or a rail option) \u2014 sample rail segment",
           "distance_text": "~807 mi",
           "duration_text": "~22-24 h",
-          "encoded_polyline": ""
+          "encoded_polyline": "c|peFf`ejVsd_{@s`P"
         }
       ]
     },
