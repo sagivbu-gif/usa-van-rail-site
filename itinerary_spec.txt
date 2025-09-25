@@ -1,12 +1,11 @@
 {
   "schema_version": "3",
-  "trip_name": "USA Van+Rail - NYC 3-night sample (hotfix)",
+  "trip_name": "USA Van+Rail - NYC 3-night sample (fixed)",
   "start_date": "2026-08-23",
   "landing": {
     "airport": "JFK",
     "arrival_time": "10:00"
   },
-  "notes": "Sample minimal dataset to restore site functionality and enable auto-scheduling. Only essential fields included; coords are primary.",
   "days": [
     {
       "day": 1,
@@ -16,17 +15,12 @@
           "id": "day1-jfk",
           "name": "JFK - Arrival",
           "type": "airport",
-          "subtype": "arrival",
           "coords": [
             40.6413111,
             -73.7781391
           ],
-          "address": "John F. Kennedy International Airport, Queens, NY",
           "stay_duration_min": 120,
-          "description": "Immigration, baggage claim and arrival processing.",
-          "parking": "n/a",
-          "price_estimate": "",
-          "slug": "jfk-arrival",
+          "description": "Immigration, baggage claim.",
           "computed": {
             "arrival_time": "10:00",
             "departure_time": "12:00"
@@ -36,7 +30,6 @@
           "id": "day1-transfer-jfk-midtown",
           "name": "JFK → Midtown (taxi)",
           "type": "transfer",
-          "subtype": "taxi",
           "from_coords": [
             40.6413111,
             -73.7781391
@@ -45,13 +38,8 @@
             40.758,
             -73.9855
           ],
-          "stay_duration_min": 0,
-          "mode": "taxi",
-          "description": "Official taxi or rideshare from JFK to Midtown Manhattan. Flat fare expected.",
-          "price_estimate": "70",
           "computed": {
             "drive_minutes": 45,
-            "distance_km": 39,
             "departure_time": "12:00",
             "arrival_time": "12:45"
           }
@@ -60,55 +48,15 @@
           "id": "day1-hotel",
           "name": "Moxy NYC Times Square (example)",
           "type": "hotel",
-          "subtype": "midtown_hotel",
           "coords": [
             40.758,
             -73.9855
           ],
-          "address": "Moxy NYC Times Square, Manhattan",
           "stay_duration_min": 150,
-          "description": "Check-in, rest and quick organizing after arrival.",
-          "parking": "valet/nearby garages (paid)",
-          "price_estimate": "150-350",
-          "slug": "moxy-times-square",
+          "description": "Check-in and rest.",
           "computed": {
             "arrival_time": "12:45",
             "departure_time": "15:15"
-          }
-        },
-        {
-          "id": "day1-timesquare",
-          "name": "Times Square / Top of the Rock area",
-          "type": "poi",
-          "subtype": "city_walk",
-          "coords": [
-            40.758,
-            -73.9855
-          ],
-          "address": "Times Square, Manhattan",
-          "stay_duration_min": 135,
-          "description": "Short evening walk and photo stops. Optional Top of the Rock visit (ticketed).",
-          "parking": "street garages (paid)",
-          "price_estimate": "40-60 (observation) / meals vary",
-          "slug": "times-square",
-          "computed": {
-            "arrival_time": "15:30",
-            "departure_time": "18:00"
-          }
-        },
-        {
-          "id": "day1-overnight",
-          "name": "Hotel overnight",
-          "type": "hotel_night",
-          "coords": [
-            40.758,
-            -73.9855
-          ],
-          "stay_duration_min": 900,
-          "description": "Overnight at Midtown hotel.",
-          "computed": {
-            "arrival_time": "18:30",
-            "departure_time": "07:30"
           }
         }
       ]
@@ -126,113 +74,37 @@
             -73.9855
           ],
           "stay_duration_min": 60,
-          "description": "Breakfast, pack, prepare for the day.",
           "computed": {
             "arrival_time": "07:30",
             "departure_time": "08:30"
           }
         },
         {
-          "id": "day2-centralpark-transfer",
-          "name": "Hotel → Central Park",
-          "type": "transfer",
-          "subtype": "subway_walk",
-          "from_coords": [
-            40.758,
-            -73.9855
-          ],
-          "to_coords": [
-            40.7829,
-            -73.9654
-          ],
-          "mode": "subway_walk",
-          "computed": {
-            "drive_minutes": 20,
-            "departure_time": "08:30",
-            "arrival_time": "08:50"
-          },
-          "description": "Short subway or walk into Central Park."
-        },
-        {
           "id": "day2-centralpark",
           "name": "Central Park — morning",
           "type": "poi",
-          "subtype": "park",
           "coords": [
             40.7829,
             -73.9654
           ],
           "stay_duration_min": 120,
-          "description": "Walks: Bethesda Terrace, Sheep Meadow, optional bike rental.",
           "computed": {
             "arrival_time": "08:50",
             "departure_time": "10:50"
           }
         },
         {
-          "id": "day2-museum-transfer",
-          "name": "Central Park → The Met (or MoMA)",
-          "type": "transfer",
-          "subtype": "walk_subway",
-          "from_coords": [
-            40.7829,
-            -73.9654
-          ],
-          "to_coords": [
-            40.7794,
-            -73.9632
-          ],
-          "mode": "walk",
-          "computed": {
-            "drive_minutes": 15,
-            "departure_time": "10:50",
-            "arrival_time": "11:05"
-          }
-        },
-        {
           "id": "day2-museum",
           "name": "The Met (example)",
           "type": "poi",
-          "subtype": "museum",
           "coords": [
             40.7794,
             -73.9632
           ],
           "stay_duration_min": 150,
-          "description": "Visit museum collections. Tickets recommended.",
-          "price_estimate": "suggested donation / ticketed",
           "computed": {
             "arrival_time": "11:05",
             "departure_time": "13:35"
-          }
-        },
-        {
-          "id": "day2-return-hotel",
-          "name": "Return to hotel — rest / optional Broadway",
-          "type": "hotel",
-          "coords": [
-            40.758,
-            -73.9855
-          ],
-          "stay_duration_min": 300,
-          "description": "Rest and evening plans (Broadway optional).",
-          "computed": {
-            "arrival_time": "13:50",
-            "departure_time": "18:30"
-          }
-        },
-        {
-          "id": "day2-overnight",
-          "name": "Hotel overnight (night 2)",
-          "type": "hotel_night",
-          "coords": [
-            40.758,
-            -73.9855
-          ],
-          "stay_duration_min": 540,
-          "computed": {
-            "arrival_time": "18:30",
-            "departure_time": "07:30"
           }
         }
       ]
@@ -242,25 +114,6 @@
       "date": "2026-08-25",
       "stops": [
         {
-          "id": "day3-dumbo-transfer",
-          "name": "Hotel → DUMBO / Brooklyn Bridge",
-          "type": "transfer",
-          "from_coords": [
-            40.758,
-            -73.9855
-          ],
-          "to_coords": [
-            40.7033,
-            -73.987
-          ],
-          "mode": "subway",
-          "computed": {
-            "drive_minutes": 35,
-            "departure_time": "09:00",
-            "arrival_time": "09:35"
-          }
-        },
-        {
           "id": "day3-dumbo",
           "name": "DUMBO / Brooklyn Bridge Park",
           "type": "poi",
@@ -269,72 +122,23 @@
             -73.987
           ],
           "stay_duration_min": 120,
-          "description": "Photo ops, coffee, short walk.",
           "computed": {
             "arrival_time": "09:35",
             "departure_time": "11:35"
           }
         },
         {
-          "id": "day3-highline-transfer",
-          "name": "DUMBO → High Line / Chelsea",
-          "type": "transfer",
-          "from_coords": [
-            40.7033,
-            -73.987
-          ],
-          "to_coords": [
-            40.741,
-            -74.0069
-          ],
-          "mode": "subway",
-          "computed": {
-            "drive_minutes": 25,
-            "departure_time": "11:35",
-            "arrival_time": "12:00"
-          }
-        },
-        {
           "id": "day3-highline",
-          "name": "High Line / Chelsea Market",
+          "name": "High Line",
           "type": "poi",
           "coords": [
             40.741,
             -74.0069
           ],
           "stay_duration_min": 120,
-          "description": "Walk the High Line, lunch at Chelsea Market.",
           "computed": {
             "arrival_time": "12:00",
             "departure_time": "14:00"
-          }
-        },
-        {
-          "id": "day3-return-hotel-pack",
-          "name": "Return to hotel — pack and prepare for van pickup (next day)",
-          "type": "hotel",
-          "coords": [
-            40.758,
-            -73.9855
-          ],
-          "stay_duration_min": 240,
-          "computed": {
-            "arrival_time": "14:30",
-            "departure_time": "18:30"
-          }
-        },
-        {
-          "id": "day3-overnight",
-          "name": "Hotel overnight (night 3)",
-          "type": "hotel_night",
-          "coords": [
-            40.758,
-            -73.9855
-          ],
-          "stay_duration_min": 540,
-          "computed": {
-            "arrival_time": "18:30",
-            "departure_time": "07:30"
           }
         }
       ]
