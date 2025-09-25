@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>USA Van+Rail – Trip Map (v3)</title>
+  <title>USA Van+Rail – Trip Map (v3.1)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
@@ -55,35 +55,160 @@
   </div>
   <script>
     const { DateTime } = luxon;
-    const state={map:null,layers:{road:L.layerGroup(),rail:L.layerGroup(),hike:L.layerGroup(),points:L.markerClusterGroup({showCoverageOnHover:false})},spec:null};
+    const state={map:null,layers:{road:L.layerGroup(),rail:L.layerGroup(),hike:L.layerGroup(),points:L.markerClusterGroup({showCoverageOnHover:false})},spec:null,pointIndex:{}};
     const scenicThresholdMin = 30;
     const osrmQueue = []; let osrmActive = 0; const osrmMax = 3;
+
     function enqueueOSRM(url){return new Promise((resolve)=>{osrmQueue.push({url,resolve}); pumpQueue();});}
     async function pumpQueue(){if(osrmActive>=osrmMax||osrmQueue.length===0)return;osrmActive++;const job=osrmQueue.shift();try{const r=await fetch(job.url);const j=await r.json();job.resolve(j);}catch(e){job.resolve(null);}osrmActive--;pumpQueue();}
+
     function initMap(){state.map=L.map('map',{zoomControl:true});L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19,attribution:'&copy; OpenStreetMap contributors'}).addTo(state.map);state.layers.road.addTo(state.map);state.layers.rail.addTo(state.map);state.layers.hike.addTo(state.map);state.layers.points.addTo(state.map);state.map.setView([39.8283,-98.5795],4)}
+
     function tzFromCoords(lat,lng){try{return tzlookup(lat,lng)}catch(e){return 'America/New_York'}}
     function fmt(dt){return dt.toFormat('MMM dd, HH:mm')}
+
     function popupHtml(p){const tz=tzFromCoords(p.coords.lat,p.coords.lng);const arr=p._arr?p._arr.setZone(tz):null;const dep=p._dep?p._dep.setZone(tz):null;const timeLine=(arr&&dep)?`${fmt(arr)} → ${fmt(dep)} (${Math.round(p.stay_duration_min)}m)`:'';return `<div class="min-w-[220px]"><div class="font-semibold">${p.name}</div><div class="text-xs text-slate-600 mt-1">Type: stop · Stay: ${p.stay_duration_min} min</div><div class="text-xs text-slate-600 mt-1">${timeLine}</div><div class="text-sm mt-2">${p.description||''}</div></div>`}
+
     function addPoints(points){(points||[]).forEach(p=>{if(!p.coords)return;const m=L.marker([p.coords.lat,p.coords.lng],{riseOnHover:true});m.bindPopup(popupHtml(p),{autoClose:false,closeOnClick:false});m.on('click',e=>{e.originalEvent?.stopPropagation?.();m.openPopup()});state.layers.points.addLayer(m)})}
+
     function decodePolyline(enc){try{return polyline.decode(enc).map(([lat,lng])=>[lat,lng])}catch(e){return null}}
     function distKmOfPolyline(enc){const ll=decodePolyline(enc);if(!ll||ll.length<2)return 0;let d=0;for(let i=1;i<ll.length;i++){d+=hav(ll[i-1],ll[i])}return d}
     function hav(a,b){const R=6371,toRad=x=>x*Math.PI/180;const dLat=toRad(b[0]-a[0]),dLng=toRad(b[1]-a[1]);const s=Math.sin(dLat/2)**2+Math.cos(toRad(a[0]))*Math.cos(toRad(b[0]))*Math.sin(dLng/2)**2;return 2*R*Math.asin(Math.sqrt(s))}
-    async function osrmRoute(fromPt,toPt){const coords=`${fromPt.coords.lng},${fromPt.coords.lat};${toPt.coords.lng},${toPt.coords.lat}`;const url=`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=polyline`;const j=await enqueueOSRM(url);if(j&&j.routes&&j.routes[0]){const r=j.routes[0];const ll=decodePolyline(r.geometry);return {latlngs:ll,duration_sec:r.duration,distance_km:(r.distance||0)/1000}}return null}
+
+    async function osrmRoute(fromPt,toPt){
+      if(!fromPt||!fromPt.coords||!toPt||!toPt.coords){console.warn('OSRM skipped: missing from/to', fromPt?.id, toPt?.id);return null;}
+      const coords=`${fromPt.coords.lng},${fromPt.coords.lat};${toPt.coords.lng},${toPt.coords.lat}`;
+      const url=`https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=polyline`;
+      const j=await enqueueOSRM(url);
+      if(j&&j.routes&&j.routes[0]){const r=j.routes[0];const ll=decodePolyline(r.geometry);return {latlngs:ll,duration_sec:r.duration,distance_km:(r.distance||0)/1000}}
+      return null;
+    }
+
     function drawLine(latlngs,layer,color){if(!latlngs||!latlngs.length)return;L.polyline(latlngs,{color,weight:3}).addTo(layer)}
-    async function chooseRoadVariant(seg,from,to){const fastest=await osrmRoute(from,to);const noTollsOn=document.getElementById('noTolls').checked&&seg.alt_routes?.no_tolls?.polyline;const scenicOn=document.getElementById('scenicPref').checked&&seg.alt_routes?.scenic?.polyline;let chosen=fastest;let chosenColor='#1e293b';if(noTollsOn){const enc=seg.alt_routes.no_tolls.polyline;const km=distKmOfPolyline(enc);const dur=km/80*3600;const ll=decodePolyline(enc);chosen={latlngs:ll,duration_sec:dur,distance_km:km};chosenColor='#0ea5e9'}else if(scenicOn&&fastest){const enc=seg.alt_routes.scenic.polyline;const km=enc?distKmOfPolyline(enc):null;const dur=km?km/70*3600:null;if(enc&&dur&&(dur-fastest.duration_sec)<=scenicThresholdMin*60){chosen={latlngs:decodePolyline(enc),duration_sec:dur,distance_km:km};chosenColor='#16a34a'}}if(chosen&&chosen.latlngs){drawLine(chosen.latlngs,state.layers.road,chosenColor)}return chosen||fastest}
+
+    async function chooseRoadVariant(seg,from,to){
+      if(!from||!to){console.warn('chooseRoadVariant: missing endpoints', seg);return null;}
+      const fastest=await osrmRoute(from,to);
+      const noTollsOn=document.getElementById('noTolls').checked&&seg.alt_routes?.no_tolls?.polyline;
+      const scenicOn=document.getElementById('scenicPref').checked&&seg.alt_routes?.scenic?.polyline;
+      let chosen=fastest;let chosenColor='#1e293b';
+      if(noTollsOn){const enc=seg.alt_routes.no_tolls.polyline;const km=distKmOfPolyline(enc);const dur=km/80*3600;const ll=decodePolyline(enc);chosen={latlngs:ll,duration_sec:dur,distance_km:km};chosenColor='#0ea5e9'}
+      else if(scenicOn&&fastest){const enc=seg.alt_routes.scenic.polyline;const km=enc?distKmOfPolyline(enc):null;const dur=km?km/70*3600:null;if(enc&&dur&&(dur-fastest.duration_sec)<=scenicThresholdMin*60){chosen={latlngs:decodePolyline(enc),duration_sec:dur,distance_km:km};chosenColor='#16a34a'}}
+      if(chosen&&chosen.latlngs){drawLine(chosen.latlngs,state.layers.road,chosenColor)} else if(fastest&&fastest.latlngs){drawLine(fastest.latlngs,state.layers.road,chosenColor)}
+      return chosen||fastest;
+    }
+
     function estimateByPolyline(enc,mode){const km=distKmOfPolyline(enc);const speed=mode==='rail'?80:4;return {duration_sec:(km/speed)*3600,distance_km:km,latlngs:decodePolyline(enc)}}
-    async function segmentDuration(seg,from,to){if(seg.mode==='road'){const chosen=await chooseRoadVariant(seg,from,to);return chosen?chosen.duration_sec:null}else if(seg.mode==='rail'||seg.mode==='hike'){if(typeof seg.duration_min==='number')return seg.duration_min*60;if(typeof seg.polyline==='string'&&seg.polyline.length>0){const est=estimateByPolyline(seg.polyline,seg.mode);drawLine(est.latlngs,seg.mode==='rail'?state.layers.rail:state.layers.hike,seg.mode==='rail'?'#6b21a8':'#16a34a');return est.duration_sec}return null}else if(seg.mode==='transit'){return seg.duration_min?seg.duration_min*60:null}return null}
-    async function computeScheduleForDay(day,anchorDateISO){const first=(day.points||[])[0];const tz=(first&&first.coords)?tzFromCoords(first.coords.lat,first.coords.lng):'America/New_York';const date=DateTime.fromISO(anchorDateISO,{zone:tz});const startStr=(day.day_start_local|| (state.spec.trip.day_start_local||'09:00'));let t=date.set({hour:Number(startStr.split(':')[0]||9),minute:Number(startStr.split(':')[1]||0),second:0});for(let i=0;i<(day.points||[]).length;i++){const p=day.points[i];p._arr=t;t=t.plus({minutes:p.stay_duration_min||0});p._dep=t;const seg=(day.segments||[])[i];if(seg){const from=p;const next=(day.points||[]).find(pp=>pp.id===seg.to)||(day.points||[])[i+1];const dur=await segmentDuration(seg,from,next);if(dur){t=t.plus({seconds:dur})}}}}
-    async function computeSchedule(spec){document.getElementById('anchorTxt').textContent='Anchor: '+spec.trip.date_anchor;const start=DateTime.fromISO(spec.trip.date_anchor);for(const day of (spec.days||[])){const dayDate=start.plus({days:(day.day||1)-1}).toISODate();day._dateISO=dayDate;await computeScheduleForDay(day,dayDate);}}
-    function buildDayCard(day){const el=document.createElement('div');el.className="border border-slate-200 rounded-xl p-3 shadow-sm";const pts=(day.points||[]).map(p=>{const tz=p.coords?tzFromCoords(p.coords.lat,p.coords.lng):'America/New_York';const arr=p._arr?p._arr.setZone(tz):null;const dep=p._dep?p._dep.setZone(tz):null;const line=(arr&&dep)?`${p.name} — ${arr.toFormat('HH:mm')} → ${dep.toFormat('HH:mm')}`:p.name;return `• ${line}`}).join('<br/>');el.innerHTML=`<div class="flex items-center justify-between gap-2"><div><div class="text-sm text-slate-500">Day ${day.day} · ${day._dateISO}</div><div class="font-semibold">${day.title||''}</div></div><div class="flex gap-2"><button class="px-3 py-1 text-sm border rounded-lg hover:bg-slate-50" data-act="zoom">Zoom</button><button class="px-3 py-1 text-sm border rounded-lg hover:bg-slate-50" data-act="focus">Focus</button></div></div><div class="text-sm mt-2">${pts}</div>`;el.querySelector('[data-act="zoom"]').addEventListener('click',()=>zoomDay(day));el.querySelector('[data-act="focus"]').addEventListener('click',()=>focusDay(day));return el}
+
+    function buildGlobalPointIndex(spec){
+      const idx={};
+      (spec.days||[]).forEach(d=>(d.points||[]).forEach(p=>{if(p?.id) idx[p.id]=p;}));
+      state.pointIndex=idx;
+    }
+    function getPointByIdLocalOrGlobal(day,id){
+      return (day.points||[]).find(p=>p.id===id) || state.pointIndex[id] || null;
+    }
+
+    async function segmentDuration(seg,day){
+      const from=getPointByIdLocalOrGlobal(day,seg.from);
+      const to=getPointByIdLocalOrGlobal(day,seg.to);
+      if(seg.mode==='road'){const chosen=await chooseRoadVariant(seg,from,to);return chosen?chosen.duration_sec:null}
+      else if(seg.mode==='rail'||seg.mode==='hike'){
+        if(typeof seg.duration_min==='number')return seg.duration_min*60;
+        if(typeof seg.polyline==='string'&&seg.polyline.length>0){const est=estimateByPolyline(seg.polyline,seg.mode);drawLine(est.latlngs,seg.mode==='rail'?state.layers.rail:state.layers.hike,seg.mode==='rail'?'#6b21a8':'#16a34a');return est.duration_sec}
+        return null;
+      } else if(seg.mode==='transit'){return seg.duration_min?seg.duration_min*60:null}
+      return null;
+    }
+
+    async function computeScheduleForDay(day, anchorDateISO){
+      const first=(day.points||[])[0]; const tz=(first&&first.coords)?tzFromCoords(first.coords.lat,first.coords.lng):'America/New_York';
+      const date=DateTime.fromISO(anchorDateISO,{zone:tz});
+      const startStr=(day.day_start_local || (state.spec.trip.day_start_local || '09:00'));
+      let t=date.set({hour:Number(startStr.split(':')[0]||9),minute:Number(startStr.split(':')[1]||0),second:0});
+      for(let i=0;i<(day.points||[]).length;i++){
+        const p=day.points[i]; p._arr=t; t=t.plus({minutes:p.stay_duration_min||0}); p._dep=t;
+        const seg=(day.segments||[])[i]; if(seg){ const dur=await segmentDuration(seg,day); if(dur){ t=t.plus({seconds:dur}); } }
+      }
+    }
+
+    async function computeSchedule(spec){
+      document.getElementById('anchorTxt').textContent='Anchor: '+spec.trip.date_anchor;
+      const start=DateTime.fromISO(spec.trip.date_anchor);
+      for(const day of (spec.days||[])){const dayDate=start.plus({days:(day.day||1)-1}).toISODate(); day._dateISO=dayDate; await computeScheduleForDay(day,dayDate);}
+    }
+
+    function buildDayCard(day){
+      const el=document.createElement('div'); el.className="border border-slate-200 rounded-xl p-3 shadow-sm";
+      const pts=(day.points||[]).map(p=>{const tz=p.coords?tzFromCoords(p.coords.lat,p.coords.lng):'America/New_York';const arr=p._arr?p._arr.setZone(tz):null;const dep=p._dep?p._dep.setZone(tz):null;const line=(arr&&dep)?`${p.name} — ${arr.toFormat('HH:mm')} → ${dep.toFormat('HH:mm')}`:p.name;return `• ${line}`}).join('<br/>');
+      el.innerHTML=`<div class="flex items-center justify-between gap-2"><div><div class="text-sm text-slate-500">Day ${day.day} · ${day._dateISO}</div><div class="font-semibold">${day.title||''}</div></div><div class="flex gap-2"><button class="px-3 py-1 text-sm border rounded-lg hover:bg-slate-50" data-act="zoom">Zoom</button><button class="px-3 py-1 text-sm border rounded-lg hover:bg-slate-50" data-act="focus">Focus</button></div></div><div class="text-sm mt-2">${pts}</div>`;
+      el.querySelector('[data-act="zoom"]').addEventListener('click',()=>zoomDay(day));
+      el.querySelector('[data-act="focus"]').addEventListener('click',()=>focusDay(day));
+      return el;
+    }
+
     function zoomDay(day){const pts=(day.points||[]).filter(p=>p.coords);if(!pts.length)return;const group=L.featureGroup(pts.map(p=>L.marker([p.coords.lat,p.coords.lng])));state.map.fitBounds(group.getBounds().pad(0.3),{animate:true})}
-    async function focusDay(day){state.layers.road.clearLayers();state.layers.rail.clearLayers();state.layers.hike.clearLayers();state.layers.points.clearLayers();addPoints(day.points);for(const seg of (day.segments||[])){const from=(day.points||[]).find(p=>p.id===seg.from);const to=(day.points||[]).find(p=>p.id===seg.to);if(seg.mode==='road'){await chooseRoadVariant(seg,from,to)}else if(seg.mode==='rail'||seg.mode==='hike'){if(typeof seg.polyline==='string'&&seg.polyline.length>0){const est=estimateByPolyline(seg.polyline,seg.mode);drawLine(est.latlngs,seg.mode==='rail'?state.layers.rail:state.layers.hike,seg.mode==='rail'?'#6b21a8':'#16a34a')}}}zoomDay(day);applyFilters()}
-    function populateJump(days){const sel=document.getElementById('dayJump');sel.innerHTML='<option value="">Jump to day…</option>';days.forEach(d=>{const o=document.createElement('option');o.value=d.day;o.textContent=`Day ${d.day}: ${d.title||''}`;sel.appendChild(o)});sel.addEventListener('change',()=>{const dnum=Number(sel.value);const day=state.spec.days.find(d=>d.day===dnum);if(day)focusDay(day)});document.getElementById('fitAll').addEventListener('click',()=>renderAll(state.spec))}
-    function applyFilters(){const r=document.getElementById('chkRoad').checked;const rl=document.getElementById('chkRail').checked;const h=document.getElementById('chkHike').checked;if(r)state.layers.road.addTo(state.map);else state.map.removeLayer(state.layers.road);if(rl)state.layers.rail.addTo(state.map);else state.map.removeLayer(state.layers.rail);if(h)state.layers.hike.addTo(state.map);else state.map.removeLayer(state.layers.hike)}
-    function hookUI(){document.getElementById('chkRoad').addEventListener('change',()=>{applyFilters();renderAll(state.spec)});document.getElementById('chkRail').addEventListener('change',()=>{applyFilters();renderAll(state.spec)});document.getElementById('chkHike').addEventListener('change',()=>{applyFilters();renderAll(state.spec)});document.getElementById('resetBtn').addEventListener('click',()=>{document.getElementById('chkRoad').checked=true;document.getElementById('chkRail').checked=true;document.getElementById('chkHike').checked=true;document.getElementById('scenicPref').checked=true;document.getElementById('noTolls').checked=false;renderAll(state.spec)})}
+
+    async function focusDay(day){
+      state.layers.road.clearLayers();state.layers.rail.clearLayers();state.layers.hike.clearLayers();state.layers.points.clearLayers();
+      addPoints(day.points);
+      for(const seg of (day.segments||[])){
+        const from=getPointByIdLocalOrGlobal(day,seg.from);
+        const to=getPointByIdLocalOrGlobal(day,seg.to);
+        if(seg.mode==='road'){await chooseRoadVariant(seg,from,to)}
+        else if(seg.mode==='rail'||seg.mode==='hike'){ if(typeof seg.polyline==='string'&&seg.polyline.length>0){const est=estimateByPolyline(seg.polyline,seg.mode);drawLine(est.latlngs,seg.mode==='rail'?state.layers.rail:state.layers.hike,seg.mode==='rail'?'#6b21a8':'#16a34a')} }
+      }
+      zoomDay(day); applyFilters();
+    }
+
+    function populateJump(days){
+      const sel=document.getElementById('dayJump'); sel.innerHTML='<option value="">Jump to day…</option>';
+      days.forEach(d=>{const o=document.createElement('option');o.value=d.day; o.textContent=`Day ${d.day}: ${d.title||''}`; sel.appendChild(o)});
+      sel.addEventListener('change',()=>{const dnum=Number(sel.value);const day=state.spec.days.find(d=>d.day===dnum); if(day) focusDay(day)});
+      document.getElementById('fitAll').addEventListener('click',()=>renderAll(state.spec));
+    }
+
+    function applyFilters(){const r=document.getElementById('chkRoad').checked;const rl=document.getElementById('chkRail').checked;const h=document.getElementById('chkHike').checked; if(r)state.layers.road.addTo(state.map);else state.map.removeLayer(state.layers.road); if(rl)state.layers.rail.addTo(state.map);else state.map.removeLayer(state.layers.rail); if(h)state.layers.hike.addTo(state.map);else state.map.removeLayer(state.layers.hike)}
+
+    function hookUI(){document.getElementById('chkRoad').addEventListener('change',()=>{applyFilters();renderAll(state.spec)});document.getElementById('chkRail').addEventListener('change',()=>{applyFilters();renderAll(state.spec)});document.getElementById('chkHike').addEventListener('change',()=>{applyFilters();renderAll(state.spec)});document.getElementById('resetBtn').addEventListener('click',()=>{document.getElementById('chkRoad').checked=true;document.getElementById('chkRail').checked=true;document.getElementById('chkHike').checked=true;document.getElementById('scenicPref').checked=true;document.getElementById('noTolls').checked=false;renderAll(state.spec)});}
+
     async function loadSpec(){const paths=['data/itinerary_spec.txt','./data/itinerary_spec.txt','/usa-van-rail-site/data/itinerary_spec.txt'];for(const p of paths){try{const r=await fetch(p,{cache:'no-cache'});if(r.ok){const txt=await r.text();return jsyaml.load(txt)}}catch(_){}}throw new Error('Could not load data/itinerary_spec.txt')}
-    async function renderAll(spec){state.layers.road.clearLayers();state.layers.rail.clearLayers();state.layers.hike.clearLayers();state.layers.points.clearLayers();const bounds=L.latLngBounds([]);for(const day of (spec.days||[])){addPoints(day.points);for(const seg of (day.segments||[])){const from=(day.points||[]).find(p=>p.id===seg.from);const to=(day.points||[]).find(p=>p.id===seg.to);if(seg.mode==='road'){await chooseRoadVariant(seg,from,to)}else if(seg.mode==='rail'||seg.mode==='hike'){if(typeof seg.polyline==='string'&&seg.polyline.length>0){const est=estimateByPolyline(seg.polyline,seg.mode);drawLine(est.latlngs,seg.mode==='rail'?state.layers.rail:state.layers.hike,seg.mode==='rail'?'#6b21a8':'#16a34a')}}}(day.points||[]).forEach(p=>{if(p.coords)bounds.extend([p.coords.lat,p.coords.lng])})}if(bounds.isValid())state.map.fitBounds(bounds.pad(0.2));applyFilters()}
-    (async()=>{try{initMap();hookUI();state.spec=await loadSpec();await computeSchedule(state.spec);const daysEl=document.getElementById('days');daysEl.innerHTML='';for(const day of (state.spec.days||[]))daysEl.appendChild(buildDayCard(day));populateJump(state.spec.days);await renderAll(state.spec)}catch(e){console.error(e);const el=document.getElementById('days');const div=document.createElement('div');div.className="p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl m-3";div.innerHTML="Failed to initialize map or load itinerary. Check console for details.";el.appendChild(div)}finally{document.getElementById('loading').style.display='none'}})();
+
+    async function renderAll(spec){
+      state.layers.road.clearLayers();state.layers.rail.clearLayers();state.layers.hike.clearLayers();state.layers.points.clearLayers();
+      buildGlobalPointIndex(spec);
+      const bounds=L.latLngBounds([]);
+      for(const day of (spec.days||[])){
+        addPoints(day.points);
+        for(const seg of (day.segments||[])){
+          const from=getPointByIdLocalOrGlobal(day,seg.from);
+          const to=getPointByIdLocalOrGlobal(day,seg.to);
+          if(seg.mode==='road'){await chooseRoadVariant(seg,from,to)}
+          else if(seg.mode==='rail'||seg.mode==='hike'){ if(typeof seg.polyline==='string'&&seg.polyline.length>0){const est=estimateByPolyline(seg.polyline,seg.mode);drawLine(est.latlngs,seg.mode==='rail'?state.layers.rail:state.layers.hike,seg.mode==='rail'?'#6b21a8':'#16a34a')} }
+        }
+        (day.points||[]).forEach(p=>{ if(p.coords) bounds.extend([p.coords.lat,p.coords.lng]); });
+      }
+      if(bounds.isValid()) state.map.fitBounds(bounds.pad(0.2));
+      applyFilters();
+    }
+
+    (async()=>{
+      try{
+        state.spec=await loadSpec(); document.getElementById('anchorTxt').textContent='Anchor: '+state.spec.trip.date_anchor;
+        initMap(); hookUI();
+        await computeSchedule(state.spec);
+        const daysEl=document.getElementById('days'); daysEl.innerHTML='';
+        for(const day of (state.spec.days||[])) daysEl.appendChild(buildDayCard(day));
+        populateJump(state.spec.days);
+        await renderAll(state.spec);
+      }catch(e){
+        console.error(e);
+        const el=document.getElementById('days'); const div=document.createElement('div');
+        div.className="p-4 text-sm text-red-700 bg-red-50 border border-red-200 rounded-xl m-3";
+        div.innerHTML="Failed to initialize map or load itinerary. Check console for details.";
+        el.appendChild(div);
+      }finally{ document.getElementById('loading').style.display='none'; }
+    })();
   </script>
 </body>
 </html>
