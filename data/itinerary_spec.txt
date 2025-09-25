@@ -1,515 +1,350 @@
-{
-  "schema": "v2",
-  "date_anchor_local_tz": "2026-08-27",
-  "tz_generation": "Asia/Jerusalem",
-  "van": {
-    "type": "Class C",
-    "length_ft": 28,
-    "seatbelts": 4,
-    "sleep": 4,
-    "tanks": {
-      "fresh_gal": 40,
-      "grey_gal": 35,
-      "black_gal": 30
-    }
-  },
-  "days": [
-    {
-      "day": 1,
-      "title": "Arrive NYC, pick up van → Shenandoah NP",
-      "points": [
-        {
-          "id": "nyc_pickup",
-          "name": "NYC Van Pickup (Jersey City)",
-          "type": "van_pickup",
-          "coords": [
-            40.7282,
-            -74.0776
-          ],
-          "stay_duration_min": 90,
-          "description": "Collect RV and supplies.",
-          "links": [],
-          "parking": "On-site",
-          "price_estimate": null
-        },
-        {
-          "id": "shenandoah_np",
-          "name": "Shenandoah NP — Thornton Gap",
-          "type": "park",
-          "coords": [
-            38.661,
-            -78.32
-          ],
-          "stay_duration_min": 60,
-          "description": "Skyline Drive intro.",
-          "links": [],
-          "parking": "Visitor center lot",
-          "price_estimate": 35
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "nyc_pickup",
-          "to": "shenandoah_np",
-          "scenic_preferred": true
-        }
-      ],
-      "sleep": "Luray / park area (RV)"
-    },
-    {
-      "day": 2,
-      "title": "Skyline Drive day → Luray (RV)",
-      "points": [
-        {
-          "id": "big_meadows",
-          "name": "Big Meadows",
-          "type": "viewpoint",
-          "coords": [
-            38.523,
-            -78.441
-          ],
-          "stay_duration_min": 90,
-          "description": "Views & short hikes.",
-          "links": [],
-          "parking": "Big Meadows lot",
-          "price_estimate": null
-        },
-        {
-          "id": "lurray",
-          "name": "Luray Overnight (RV)",
-          "type": "camp",
-          "coords": [
-            38.665,
-            -78.459
-          ],
-          "stay_duration_min": 720,
-          "description": "RV campground with hookups.",
-          "links": [],
-          "parking": "Campsite",
-          "price_estimate": 55
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "shenandoah_np",
-          "to": "big_meadows",
-          "scenic_preferred": true
-        },
-        {
-          "mode": "road",
-          "from": "big_meadows",
-          "to": "lurray",
-          "scenic_preferred": true
-        }
-      ],
-      "sleep": "Luray RV park"
-    },
-    {
-      "day": 3,
-      "title": "Luray → Great Smoky Mountains (Sugarlands)",
-      "points": [
-        {
-          "id": "gsmnp",
-          "name": "Great Smoky Mountains NP — Sugarlands VC",
-          "type": "park",
-          "coords": [
-            35.68,
-            -83.536
-          ],
-          "stay_duration_min": 120,
-          "description": "Visitor center & orientation.",
-          "links": [],
-          "parking": "Visitor center lot",
-          "price_estimate": 35
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "lurray",
-          "to": "gsmnp",
-          "scenic_preferred": true
-        }
-      ],
-      "sleep": "Gatlinburg area (RV)"
-    },
-    {
-      "day": 4,
-      "title": "Smokies highlights: Clingmans Dome → Gatlinburg (RV)",
-      "points": [
-        {
-          "id": "clingmans_dome",
-          "name": "Clingmans Dome",
-          "type": "viewpoint",
-          "coords": [
-            35.562,
-            -83.498
-          ],
-          "stay_duration_min": 90,
-          "description": "Short paved trail to tower.",
-          "links": [],
-          "parking": "Trailhead lot",
-          "price_estimate": null
-        },
-        {
-          "id": "gatlinburg_rv",
-          "name": "Gatlinburg RV Park",
-          "type": "camp",
-          "coords": [
-            35.729,
-            -83.493
-          ],
-          "stay_duration_min": 720,
-          "description": "Overnight RV.",
-          "links": [],
-          "parking": "Campsite",
-          "price_estimate": 55
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "gsmnp",
-          "to": "clingmans_dome",
-          "scenic_preferred": true
-        },
-        {
-          "mode": "hike",
-          "from": "clingmans_dome",
-          "to": "clingmans_dome",
-          "polyline": [
-            [
-              35.562,
-              -83.498
-            ],
-            [
-              35.56245,
-              -83.4992
-            ],
-            [
-              35.5629,
-              -83.4986
-            ],
-            [
-              35.562,
-              -83.498
-            ]
-          ]
-        },
-        {
-          "mode": "road",
-          "from": "clingmans_dome",
-          "to": "gatlinburg_rv",
-          "scenic_preferred": true
-        }
-      ],
-      "sleep": "Gatlinburg RV"
-    },
-    {
-      "day": 5,
-      "title": "Gatlinburg → Atlanta (city)",
-      "points": [
-        {
-          "id": "atlanta",
-          "name": "Atlanta — Downtown",
-          "type": "city",
-          "coords": [
-            33.7488,
-            -84.3881
-          ],
-          "stay_duration_min": 480,
-          "description": "City exploration. Marked as transit/walking.",
-          "links": [],
-          "parking": "Garage",
-          "price_estimate": 4
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "gatlinburg_rv",
-          "to": "atlanta",
-          "scenic_preferred": true
-        }
-      ],
-      "sleep": "Atlanta hotel / RV park"
-    },
-    {
-      "day": 6,
-      "title": "Atlanta city day (no van routing)",
-      "points": [
-        {
-          "id": "atl_transit",
-          "name": "MARTA / walking",
-          "type": "city",
-          "coords": [
-            33.757,
-            -84.392
-          ],
-          "stay_duration_min": 600,
-          "description": "No van routing today.",
-          "links": [],
-          "parking": "Public transport",
-          "price_estimate": null
-        }
-      ],
-      "segments": [],
-      "sleep": "Atlanta"
-    },
-    {
-      "day": 7,
-      "title": "Atlanta → Orlando (RV base)",
-      "points": [
-        {
-          "id": "orlando",
-          "name": "Orlando (RV park)",
-          "type": "camp",
-          "coords": [
-            28.5383,
-            -81.3792
-          ],
-          "stay_duration_min": 720,
-          "description": "Base for parks.",
-          "links": [],
-          "parking": "Campsite",
-          "price_estimate": 55
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "atlanta",
-          "to": "orlando"
-        }
-      ],
-      "sleep": "Orlando RV"
-    },
-    {
-      "day": 8,
-      "title": "Orlando parks (no van routing)",
-      "points": [
-        {
-          "id": "disney_universal",
-          "name": "Disney / Universal (transit)",
-          "type": "activity",
-          "coords": [
-            28.3772,
-            -81.5707
-          ],
-          "stay_duration_min": 720,
-          "description": "Use park transport; no van routing.",
-          "links": [],
-          "parking": "Theme park",
-          "price_estimate": null
-        }
-      ],
-      "segments": [],
-      "sleep": "Orlando RV"
-    },
-    {
-      "day": 9,
-      "title": "Orlando → Memphis",
-      "points": [
-        {
-          "id": "memphis",
-          "name": "Memphis — Downtown",
-          "type": "city",
-          "coords": [
-            35.1495,
-            -90.049
-          ],
-          "stay_duration_min": 720,
-          "description": "City & music.",
-          "links": [],
-          "parking": "Garage",
-          "price_estimate": 4
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "orlando",
-          "to": "memphis"
-        }
-      ],
-      "sleep": "Memphis hotel"
-    },
-    {
-      "day": 10,
-      "title": "Memphis day — Graceland",
-      "points": [
-        {
-          "id": "graceland",
-          "name": "Graceland",
-          "type": "museum",
-          "coords": [
-            35.0478,
-            -90.026
-          ],
-          "stay_duration_min": 180,
-          "description": "Elvis Presley home.",
-          "links": [],
-          "parking": "On-site",
-          "price_estimate": 25
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "memphis",
-          "to": "graceland"
-        },
-        {
-          "mode": "road",
-          "from": "graceland",
-          "to": "memphis"
-        }
-      ],
-      "sleep": "Memphis"
-    },
-    {
-      "day": 11,
-      "title": "Memphis → Dallas",
-      "points": [
-        {
-          "id": "dallas",
-          "name": "Dallas — Downtown",
-          "type": "city",
-          "coords": [
-            32.7767,
-            -96.797
-          ],
-          "stay_duration_min": 720,
-          "description": "Overnight hotel.",
-          "links": [],
-          "parking": "Hotel",
-          "price_estimate": null
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "memphis",
-          "to": "dallas"
-        }
-      ],
-      "sleep": "Dallas"
-    },
-    {
-      "day": 12,
-      "title": "Dallas → Amarillo (overnight)",
-      "points": [
-        {
-          "id": "amarillo",
-          "name": "Amarillo (overnight)",
-          "type": "camp",
-          "coords": [
-            35.221997,
-            -101.831299
-          ],
-          "stay_duration_min": 720,
-          "description": "Halfway stop.",
-          "links": [],
-          "parking": "RV park",
-          "price_estimate": 55
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "dallas",
-          "to": "amarillo"
-        }
-      ],
-      "sleep": "Amarillo RV"
-    },
-    {
-      "day": 13,
-      "title": "Amarillo → Denver",
-      "points": [
-        {
-          "id": "denver",
-          "name": "Denver — Downtown",
-          "type": "city",
-          "coords": [
-            39.7392,
-            -104.9903
-          ],
-          "stay_duration_min": 720,
-          "description": "City stop.",
-          "links": [],
-          "parking": "Hotel",
-          "price_estimate": null
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "amarillo",
-          "to": "denver",
-          "scenic_preferred": true
-        }
-      ],
-      "sleep": "Denver"
-    },
-    {
-      "day": 14,
-      "title": "Denver city day (no van routing)",
-      "points": [
-        {
-          "id": "denver_walk",
-          "name": "Downtown / transit",
-          "type": "city",
-          "coords": [
-            39.742,
-            -104.991
-          ],
-          "stay_duration_min": 600,
-          "description": "No van routing.",
-          "links": [],
-          "parking": "Transit",
-          "price_estimate": null
-        }
-      ],
-      "segments": [],
-      "sleep": "Denver"
-    },
-    {
-      "day": 15,
-      "title": "Denver → Rocky Mountain NP (fixed polyline demo)",
-      "points": [
-        {
-          "id": "rmnp",
-          "name": "Rocky Mountain NP — Estes Park",
-          "type": "park",
-          "coords": [
-            40.3772,
-            -105.5217
-          ],
-          "stay_duration_min": 240,
-          "description": "Scenic roads; fixed line demo.",
-          "links": [],
-          "parking": "Visitor center",
-          "price_estimate": 35
-        }
-      ],
-      "segments": [
-        {
-          "mode": "road",
-          "from": "denver",
-          "to": "rmnp",
-          "scenic_preferred": true
-        },
-        {
-          "mode": "rail",
-          "from": "rmnp",
-          "to": "rmnp",
-          "polyline": "_se~Fz`q`S_kbC`bAea@_yA?o@c@q@"
-        }
-      ],
-      "sleep": "Estes Park / RMNP area"
-    }
-  ]
-}
+# Itinerary Spec (15 Days, updated 2025-09-25)
+# Schema: v2.1
+# Anchor Date: 2026-08-27
+
+trip:
+  id: usa-van-rail-2026
+  name: USA Cross-Country Van + Rail Trip
+  date_anchor: 2026-08-27
+  timezone: Asia/Jerusalem
+  vehicle: class-c-28ft
+
+days:
+  - day: 1
+    date: 2026-08-27
+    title: Arrival in New York City
+    points:
+      - id: nyc_arrival
+        name: JFK Airport
+        type: transfer
+        coords: { lat: 40.6413, lng: -73.7781 }
+        stay_duration_min: 120
+        description: Arrival to NYC, baggage claim, transfer to hotel.
+        links: [{ label: "Airport", url: "https://www.jfkairport.com" }]
+        parking: { kind: "none" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: jfk-airport
+      - id: nyc_hotel
+        name: Manhattan Hotel
+        type: lodging_parking
+        coords: { lat: 40.758, lng: -73.9855 }
+        stay_duration_min: 720
+        description: Overnight stay in Midtown Manhattan.
+        links: []
+        parking: { kind: "garage", notes: "Hotel valet parking" }
+        price_estimate: { currency: "USD", amount_min: 200, amount_max: 300 }
+        slug: manhattan-hotel
+    segments:
+      - mode: transit
+        from: nyc_arrival
+        to: nyc_hotel
+        polyline: []
+        notes: Taxi/Uber to hotel
+
+  - day: 2
+    date: 2026-08-28
+    title: Explore New York City
+    points:
+      - id: nyc_city_day
+        name: New York City exploration
+        type: city_day
+        coords: { lat: 40.758, lng: -73.9855 }
+        stay_duration_min: 480
+        description: Walking + subway between main sights.
+        links: [{ label: "NYC Info", url: "https://www.nycgo.com" }]
+        parking: { kind: "none" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: nyc-city-day
+    segments: []
+
+  - day: 3
+    date: 2026-08-29
+    title: Drive NYC → Shenandoah (Front Royal)
+    points:
+      - id: nyc_pickup_van
+        name: RV Pickup (NYC area)
+        type: transfer
+        coords: { lat: 40.770, lng: -73.988 }
+        stay_duration_min: 90
+        description: Collect Class C RV; walkthrough and paperwork.
+        links: []
+        parking: { kind: "onsite" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: nyc-rv-pickup
+      - id: shenandoah_np_front_royal
+        name: Shenandoah National Park – Front Royal Entrance
+        type: attraction_park
+        coords: { lat: 38.9183, lng: -78.1945 }
+        stay_duration_min: 120
+        description: Skyline Drive begins; scenic overlooks.
+        links: [{ label: "NPS", url: "https://www.nps.gov/shen" }]
+        parking: { kind: "lot" }
+        price_estimate: { currency: "USD", amount_min: 35, amount_max: 35 }
+        slug: shenandoah-front-royal
+      - id: luray_rv_park
+        name: Luray RV Park (overnight)
+        type: lodging_parking
+        coords: { lat: 38.665, lng: -78.459 }
+        stay_duration_min: 720
+        description: Full hookups near Luray.
+        links: []
+        parking: { kind: "rv_hookup", notes: "Electric/water/dump" }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 75 }
+        slug: luray-rv-park
+    segments:
+      - mode: road
+        from: nyc_pickup_van
+        to: shenandoah_np_front_royal
+        options: { scenic: true }
+      - mode: road
+        from: shenandoah_np_front_royal
+        to: luray_rv_park
+        options: { scenic: true }
+
+  - day: 4
+    date: 2026-08-30
+    title: Skyline Drive day → Waynesboro
+    points:
+      - id: skyline_overlooks
+        name: Skyline Drive Overlooks (stops)
+        type: attraction_park
+        coords: { lat: 38.5, lng: -78.7 }
+        stay_duration_min: 180
+        description: Scenic pullouts along Skyline Drive.
+        links: []
+        parking: { kind: "lot" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: skyline-drive-overlooks
+      - id: waynesboro_rv
+        name: Waynesboro RV Campground
+        type: lodging_parking
+        coords: { lat: 38.067, lng: -78.889 }
+        stay_duration_min: 720
+        description: Overnight near Blue Ridge Parkway start.
+        links: []
+        parking: { kind: "rv_hookup" }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 75 }
+        slug: waynesboro-rv
+    segments:
+      - mode: road
+        from: luray_rv_park
+        to: skyline_overlooks
+        options: { scenic: true }
+      - mode: road
+        from: skyline_overlooks
+        to: waynesboro_rv
+        options: { scenic: true }
+
+  - day: 5
+    date: 2026-08-31
+    title: Blue Ridge Parkway → Great Smoky Mountains (Gatlinburg)
+    points:
+      - id: gsmnp_sugarlands
+        name: Great Smoky Mountains NP – Sugarlands
+        type: attraction_park
+        coords: { lat: 35.680, lng: -83.536 }
+        stay_duration_min: 120
+        description: Visitor center and scenic loops.
+        links: [{ label: "NPS", url: "https://www.nps.gov/grsm" }]
+        parking: { kind: "lot" }
+        price_estimate: { currency: "USD", amount_min: 35, amount_max: 35 }
+        slug: gsmnp-sugarlands
+      - id: gatlinburg_rv
+        name: Gatlinburg/Pigeon Forge RV Resort
+        type: lodging_parking
+        coords: { lat: 35.808, lng: -83.579 }
+        stay_duration_min: 720
+        description: Full hookups near attractions.
+        links: []
+        parking: { kind: "rv_hookup" }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 85 }
+        slug: gatlinburg-rv
+    segments:
+      - mode: road
+        from: waynesboro_rv
+        to: gsmnp_sugarlands
+        options: { scenic: true }
+      - mode: road
+        from: gsmnp_sugarlands
+        to: gatlinburg_rv
+        options: { scenic: true }
+
+  - day: 6
+    date: 2026-09-01
+    title: Smokies exploration (no van route)
+    points:
+      - id: gsmnp_city_day
+        name: Great Smoky Mountains – exploration day
+        type: city_day
+        coords: { lat: 35.714, lng: -83.510 }
+        stay_duration_min: 480
+        description: Park shuttles/guided tours; no fixed driving route.
+        links: []
+        parking: { kind: "none" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: gsmnp-city-day
+    segments: []
+
+  - day: 7
+    date: 2026-09-02
+    title: Drive Gatlinburg → Atlanta
+    points:
+      - id: atlanta_hotel
+        name: Atlanta Midtown Hotel (parking)
+        type: lodging_parking
+        coords: { lat: 33.781, lng: -84.388 }
+        stay_duration_min: 720
+        description: Overnight in Atlanta with garage parking.
+        links: []
+        parking: { kind: "garage" }
+        price_estimate: { currency: "USD", amount_min: 25, amount_max: 35 }
+        slug: atlanta-hotel-parking
+    segments:
+      - mode: road
+        from: gatlinburg_rv
+        to: atlanta_hotel
+        options: { scenic: false }
+
+  - day: 8
+    date: 2026-09-03
+    title: Atlanta city day (no van route)
+    points:
+      - id: atl_city_day
+        name: Atlanta exploration
+        type: city_day
+        coords: { lat: 33.760, lng: -84.393 }
+        stay_duration_min: 480
+        description: Aquarium/Civil Rights Center; walk/transit.
+        links: []
+        parking: { kind: "none" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: atlanta-city-day
+    segments: []
+
+  - day: 9
+    date: 2026-09-04
+    title: Drive Atlanta → Orlando
+    points:
+      - id: orlando_rv
+        name: Orlando RV Resort (near Disney)
+        type: lodging_parking
+        coords: { lat: 28.350, lng: -81.588 }
+        stay_duration_min: 720
+        description: Full hookups near theme parks.
+        links: []
+        parking: { kind: "rv_hookup" }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 85 }
+        slug: orlando-rv-resort
+    segments:
+      - mode: road
+        from: atlanta_hotel
+        to: orlando_rv
+        options: { scenic: false }
+
+  - day: 10
+    date: 2026-09-05
+    title: Orlando theme parks (no van route)
+    points:
+      - id: orlando_city_day
+        name: Orlando parks day
+        type: city_day
+        coords: { lat: 28.478, lng: -81.469 }
+        stay_duration_min: 540
+        description: Disney/Universal via shuttles; no van route.
+        links: []
+        parking: { kind: "none" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: orlando-city-day
+    segments: []
+
+  - day: 11
+    date: 2026-09-06
+    title: Drive Orlando → Birmingham, AL (split leg)
+    points:
+      - id: birmingham_stop
+        name: Birmingham Overnight Stop
+        type: lodging_parking
+        coords: { lat: 33.5207, lng: -86.8025 }
+        stay_duration_min: 720
+        description: Midway stop to break long drive.
+        links: []
+        parking: { kind: "rv_hookup" }
+        price_estimate: { currency: "USD", amount_min: 55, amount_max: 75 }
+        slug: birmingham-overnight
+    segments:
+      - mode: road
+        from: orlando_rv
+        to: birmingham_stop
+        options: { scenic: false }
+
+  - day: 12
+    date: 2026-09-07
+    title: Drive Birmingham → Memphis
+    points:
+      - id: memphis_parking
+        name: Memphis RV/Hotel Parking
+        type: lodging_parking
+        coords: { lat: 35.1495, lng: -90.0490 }
+        stay_duration_min: 720
+        description: Overnight near Beale Street area.
+        links: []
+        parking: { kind: "lot" }
+        price_estimate: { currency: "USD", amount_min: 15, amount_max: 25 }
+        slug: memphis-parking
+    segments:
+      - mode: road
+        from: birmingham_stop
+        to: memphis_parking
+        options: { scenic: false }
+
+  - day: 13
+    date: 2026-09-08
+    title: Memphis city day (no van route)
+    points:
+      - id: memphis_city_day
+        name: Memphis exploration
+        type: city_day
+        coords: { lat: 35.141, lng: -90.053 }
+        stay_duration_min: 480
+        description: Beale St., Sun Studio/Graceland (shuttle).
+        links: []
+        parking: { kind: "none" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: memphis-city-day
+    segments: []
+
+  - day: 14
+    date: 2026-09-09
+    title: Drive Memphis → Dallas
+    points:
+      - id: dallas_parking
+        name: Dallas Hotel Parking
+        type: lodging_parking
+        coords: { lat: 32.7767, lng: -96.7970 }
+        stay_duration_min: 720
+        description: Overnight downtown Dallas.
+        links: []
+        parking: { kind: "garage" }
+        price_estimate: { currency: "USD", amount_min: 25, amount_max: 35 }
+        slug: dallas-hotel-parking
+    segments:
+      - mode: road
+        from: memphis_parking
+        to: dallas_parking
+        options: { scenic: false }
+
+  - day: 15
+    date: 2026-09-10
+    title: Dallas city day (no van route)
+    points:
+      - id: dallas_city_day
+        name: Dallas exploration
+        type: city_day
+        coords: { lat: 32.779, lng: -96.800 }
+        stay_duration_min: 480
+        description: Museums, JFK sites; walk/transit.
+        links: []
+        parking: { kind: "none" }
+        price_estimate: { currency: "USD", amount_min: 0, amount_max: 0 }
+        slug: dallas-city-day
+    segments: []
